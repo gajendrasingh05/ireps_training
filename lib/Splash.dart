@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import 'linkscreen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,7 +12,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _logoAnimation;
+  late Animation<double> _logoFadeAnimation;
+  late Animation<double> _logoScaleAnimation;
   late Animation<double> _textFadeAnimation;
   late Animation<double> _textScaleAnimation;
 
@@ -28,11 +27,13 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    // Logo animation (moves vertically)
-    _logoAnimation = Tween<double>(
-      begin: -200.0, // Starts off the top of the screen
-      end: 0.0, // Ends at the center
-    ).animate(
+    // Logo fade-in animation
+    _logoFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    // Logo scale-up animation
+    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.5).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
@@ -41,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    // Text scale animation
+    // Text scale-up animation
     _textScaleAnimation = Tween<double>(begin: 1.0, end: 2.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
@@ -78,8 +79,8 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black,
                   Colors.cyan,
+                  Colors.black
                 ],
               ),
             ),
@@ -89,15 +90,18 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Animated logo position
-                      Transform.translate(
-                        offset: Offset(0, _logoAnimation.value),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          height: 120,
+                      // Animated logo with fade-in and scale
+                      Opacity(
+                        opacity: _logoFadeAnimation.value,
+                        child: Transform.scale(
+                          scale: _logoScaleAnimation.value,
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 120,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 40),
                       // Animated text with fade-in and scale
                       Opacity(
                         opacity: _textFadeAnimation.value,
@@ -106,7 +110,8 @@ class _SplashScreenState extends State<SplashScreen>
                           child: const Text(
                             "IREPS",
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: 27,
+                              fontFamily: 'font1',
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -125,7 +130,7 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         const CircularProgressIndicator(
                           valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.white),
+                          AlwaysStoppedAnimation<Color>(Colors.white30),
                         ),
                         const SizedBox(height: 20),
                         const Text(
