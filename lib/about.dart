@@ -44,7 +44,7 @@ class AboutUsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 20), // Added space below the navbar
+                  SizedBox(height: 20),
                   Row(
                     children: [
                       CircleAvatar(
@@ -54,7 +54,7 @@ class AboutUsPage extends StatelessWidget {
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'IREPS\nIndian Railways E-Procurement System',
+                          'Indian Railways E-Procurement System',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -115,6 +115,19 @@ class AboutUsPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.transparent,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/wecelebrate.jpg',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 16),
                           Text(
                             'Developed and Published by',
                             style: TextStyle(
