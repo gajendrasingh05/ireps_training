@@ -19,6 +19,7 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
   DateTime uploadingDate = DateTime(2025, 1, 29);
   bool showTenderNo = false;
   bool showItemDesc = false;
+  String? selectedOrganisation;
 
   void resetForm() {
     setState(() {
@@ -28,6 +29,7 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
       selectedDateType = 'uploading';
       closingDate = DateTime(2025, 1, 28);
       uploadingDate = DateTime(2025, 1, 29);
+      selectedOrganisation = null;
     });
   }
 
@@ -116,17 +118,11 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
             SizedBox(height: 8),
             _buildWorkAreaSelection(),
             SizedBox(height: 16),
-            _buildDropdownTile(Icons.list, "Select Organisation"),
+            _buildOrganisationDropdown(),
             _buildDropdownTile(Icons.train, "Select Railway"),
             _buildDropdownTile(Icons.account_balance, "Select Department"),
             _buildDropdownTile(Icons.location_city, "Select Unit"),
             SizedBox(height: 16),
-            // Text(
-            //   "Select Tender Date Criteria",
-            //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            //
-            //
-            // ),
             RichText(
               text: TextSpan(
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
@@ -139,8 +135,6 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
                 ],
               ),
             ),
-
-
             SizedBox(height: 18),
             _buildDateTypeSelection(),
             SizedBox(height: 12),
@@ -151,6 +145,50 @@ class _CustomSearchPageState extends State<CustomSearchPage> {
             _buildActionButton("Reset", Colors.blue.shade400, onPressed: resetForm),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildOrganisationDropdown() {
+    List<String> organisations = [
+      "KRCL",
+      "DMRC",
+      "MRVC",
+      "CRIS",
+      "RAILTEL",
+      "DFCCIL",
+      "KERALA RAIL DEVELOPMENT CORPORATION LTD",
+      "CONTAINER CORPORATION OF INDIA LTD",
+      "BRAITHWAITE AND CO. LIMITED",
+      "IRCON INTERNATIONAL LIMITED",
+      "INDIAN RAILWAY CATERING AND TOURISM CORPORATION LTD",
+      "INDIAN RAILWAY FINANCE CORPORATION",
+      "KOLKATA METRO RAIL CORPORATION LTD"
+    ];
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 12),
+        leading: Icon(Icons.list, color: Colors.blue.shade800, size: 20),
+        title: DropdownButton<String>(
+          value: selectedOrganisation,
+          hint: Text("Select Organisation", style: TextStyle(fontSize: 14)),
+          isExpanded: true,
+          underline: SizedBox(), // Remove the default underline
+          items: organisations.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value, style: TextStyle(fontSize: 14)),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              selectedOrganisation = newValue;
+            });
+          },
+        ),
+        // Removed the trailing arrow here
       ),
     );
   }
