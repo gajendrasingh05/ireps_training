@@ -239,7 +239,13 @@ class _ParcelPaymentPageState extends State<ParcelPaymentPage> with SingleTicker
   Widget buildTypeButton(String type) {
     bool isSelected = _selectedType == type;
     return GestureDetector(
-      onTap: () => setState(() => _selectedType = type),
+      onTap: () {
+        setState(() {
+          _selectedType = type;
+          // Reset selected value when type changes
+          selectedValue = _selectedType == 'SLR' ? 'F1' : '1';
+        });
+      },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -264,6 +270,11 @@ class _ParcelPaymentPageState extends State<ParcelPaymentPage> with SingleTicker
   }
 
   Widget buildDropdown() {
+    // Define options based on selected type
+    List<String> options = _selectedType == 'SLR'
+        ? ['F1', 'F2', 'F3']
+        : ['1', '2', '3', '4', '5'];
+
     return DropdownButtonFormField<String>(
       value: selectedValue,
       decoration: InputDecoration(
@@ -276,7 +287,7 @@ class _ParcelPaymentPageState extends State<ParcelPaymentPage> with SingleTicker
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      items: ['F1', 'F2', 'F3'].map((String value) {
+      items: options.map((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
