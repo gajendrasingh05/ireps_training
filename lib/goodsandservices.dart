@@ -33,6 +33,7 @@ class _PublicDocumentsPageState extends State<PublicDocumentsPage> {
   String? selectedDepartment;
 
   final Color primaryBlue = Colors.blue[800]!;
+  final Color secondaryBlue = Colors.blue[500]!; // Much lighter blue for secondary navbar
   final List<String> organizations = ['Organization A', 'Organization B', 'Organization C'];
   final List<String> zones = ['North Zone', 'South Zone', 'East Zone', 'West Zone'];
   final List<String> departments = ['Finance', 'Healthcare', 'Education', 'Transport'];
@@ -63,119 +64,111 @@ class _PublicDocumentsPageState extends State<PublicDocumentsPage> {
             },
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56.0),
+          child: Container(
+            color: secondaryBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: const Row(
+              children: [
+                //Icon(Icons.inventory_2, color: Colors.white),
+                SizedBox(width: 12),
+                Text(
+                  'Goods and Services',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: primaryBlue,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.blue[900],
-                  borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDropdownField(
+                icon: Icons.business,
+                label: 'Organization',
+                value: selectedOrganization,
+                items: organizations,
+                onChanged: (value) {
+                  setState(() => selectedOrganization = value);
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildDropdownField(
+                icon: Icons.location_on,
+                label: 'Zone',
+                value: selectedZone,
+                items: zones,
+                onChanged: (value) {
+                  setState(() => selectedZone = value);
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildDropdownField(
+                icon: Icons.account_balance,
+                label: 'Department',
+                value: selectedDepartment,
+                items: departments,
+                onChanged: (value) {
+                  setState(() => selectedDepartment = value);
+                },
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle show results
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.inventory_2, color: Colors.white),
-                    SizedBox(width: 12),
-                    Text(
-                      'Goods and Services',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                child: const Text(
+                  'Show Results',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildDropdownField(
-                    icon: Icons.business,
-                    label: 'Organization',
-                    value: selectedOrganization,
-                    items: organizations,
-                    onChanged: (value) {
-                      setState(() => selectedOrganization = value);
-                    },
+              const SizedBox(height: 16),
+              OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedOrganization = null;
+                    selectedZone = null;
+                    selectedDepartment = null;
+                  });
+                },
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: BorderSide(color: primaryBlue),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 20),
-                  _buildDropdownField(
-                    icon: Icons.location_on,
-                    label: 'Zone',
-                    value: selectedZone,
-                    items: zones,
-                    onChanged: (value) {
-                      setState(() => selectedZone = value);
-                    },
+                ),
+                child: Text(
+                  'Reset',
+                  style: TextStyle(
+                    color: primaryBlue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 20),
-                  _buildDropdownField(
-                    icon: Icons.account_balance,
-                    label: 'Department',
-                    value: selectedDepartment,
-                    items: departments,
-                    onChanged: (value) {
-                      setState(() => selectedDepartment = value);
-                    },
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle show results
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Show Results',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedOrganization = null;
-                        selectedZone = null;
-                        selectedDepartment = null;
-                      });
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: primaryBlue),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      'Reset',
-                      style: TextStyle(
-                        color: primaryBlue,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
