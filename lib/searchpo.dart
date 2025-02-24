@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -38,7 +39,6 @@ class POSearchScreenState extends State<POSearchScreen> with SingleTickerProvide
   final TextEditingController _plNoController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
-  // Initialize with default values
   double _minValue = 0;
   double _maxValue = 100;
 
@@ -350,38 +350,67 @@ class POSearchScreenState extends State<POSearchScreen> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            // Handle back button press
-          },
-        ),
-        title: const Center(
-          child: Text(
-            'Search PO',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home, color: Colors.white),
-            onPressed: () {
-              // Handle home button press
-            },
-          ),
-        ],
-        backgroundColor: Colors.blue.shade800,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Search PO (Zonal)'),
-            Tab(text: 'Search PO (Other)'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(110), // Increased height to accommodate both bars
+        child: Column(
+          children: [
+            // Main AppBar
+            AppBar(
+              toolbarHeight: 60, // Increased height for main AppBar
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  // Handle back button press
+                },
+              ),
+              title: const Center(
+                child: Text(
+                  'Search PO',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.home, color: Colors.white),
+                  onPressed: () {
+                    // Handle home button press
+                  },
+                ),
+              ],
+              backgroundColor: Colors.blue.shade800,
+            ),
+            // Separate TabBar with lighter color
+            Container(
+              height: 50, // Fixed height for TabBar
+              color: Colors.blue.shade700, // Lighter blue color
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(
+                    child: Text(
+                      'Search PO (Zonal)',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Search PO (Other)',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ],
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white70,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.tab,
+              ),
+            ),
           ],
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          labelStyle: const TextStyle(fontSize: 14),
         ),
       ),
       body: TabBarView(
@@ -439,7 +468,7 @@ class POSearchScreenState extends State<POSearchScreen> with SingleTickerProvide
                     onPressed: _resetForm,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding : const EdgeInsets.symmetric(vertical: 16),
                       side: BorderSide(color: Colors.blue.shade800),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
