@@ -195,12 +195,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Changed default value to "Select" instead of "Goods and Services"
+  // Changed default text to "Select" as header only, not an option
   String selectedWorkArea = 'Select';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Removed 'Select' from the workAreas list so it won't appear as an option
   final List<String> workAreas = [
-    'Select',  // Added this as the first option
     'Goods and Services',
     'Works',
     'Earning & Leasing',
