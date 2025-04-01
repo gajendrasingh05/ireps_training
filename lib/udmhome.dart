@@ -200,6 +200,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> with TickerProviderStat
   String _searchQuery = '';
 
   final Map<String, String> _translations = {
+    'User Depot Module': 'उपयोगकर्ता डिपो मॉड्यूल',
     'Search Item': 'आइटम खोजें',
     'Stock Availability': 'स्टॉक उपलब्धता',
     'Stores Depot': 'स्टोर डिपो',
@@ -889,9 +890,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> with TickerProviderStat
                       Icons.grid_view_rounded, color: Colors.white),
                 ),
               ),
+              //     const SizedBox(width: 16),
+              //     const Text(
+              //       'User Depot Module',
+              //       style: TextStyle(
+              //         color: Colors.white,
+              //         fontSize: 20,
+              //         fontWeight: FontWeight.bold,
+              //       ),
+              //     ),
+              //   ],
+              // ),
               const SizedBox(width: 16),
-              const Text(
-                'User Depot Module',
+              Text(
+                _translate('User Depot Module'), // Use the translation here
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
