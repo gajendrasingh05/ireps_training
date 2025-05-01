@@ -1,0 +1,1001 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const ConsumptionSummaryApp());
+}
+
+class ConsumptionSummaryApp extends StatelessWidget {
+  const ConsumptionSummaryApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue.shade800,
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: Colors.grey.shade50,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.blue.shade800,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      home: const ConsumptionSummaryScreen(),
+    );
+  }
+}
+
+class ConsumptionSummaryScreen extends StatefulWidget {
+  const ConsumptionSummaryScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ConsumptionSummaryScreen> createState() => _ConsumptionSummaryScreenState();
+}
+
+class _ConsumptionSummaryScreenState extends State<ConsumptionSummaryScreen> {
+  // Selection values
+  String? selectedRailway;
+  String? selectedDepartment;
+  String? selectedDepot = 'All';
+  String? selectedSubDepot;
+
+  // For Item Type and Item Usage
+  bool showItemType = false;
+  bool showItemUsage = false;
+  String? selectedItemType;
+  String? selectedItemUsage;
+
+  // Added missing variable for increase/decrease toggle
+  bool _isIncrease = true; // Default to "Increase"
+
+  // Slider control for percentage
+  double percentageValue = 20;
+  final TextEditingController currentFromDateController = TextEditingController(text: '28-02-2025');
+  final TextEditingController currentToDateController = TextEditingController(text: '29-04-2025');
+  final TextEditingController previousFromDateController = TextEditingController(text: '29-12-2024');
+  final TextEditingController previousToDateController = TextEditingController(text: '27-02-2025');
+
+  // Control values
+  int selectedSummaryType = 0;
+  int selectedChangeType = 0;
+  int topItemsValue = 10;
+
+  // Simulated data for dropdowns
+  final List<String> railways = ['Central Railway', 'Western Railway', 'Southern Railway'];
+  final List<String> departments = ['Engineering', 'Mechanical', 'Electrical', 'Signal'];
+  final List<String> depots = ['All', 'Mumbai', 'Delhi', 'Chennai'];
+  final List<String> subDepots = ['North', 'South', 'East', 'West'];
+  final List<String> itemTypes = ['Fixed Assets', 'Consumables', 'Tools', 'Equipment'];
+  final List<String> itemUsages = ['Regular', 'Emergency', 'Seasonal', 'Special'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: const Text('Consumption Summary'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {},
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home_outlined, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildModifiedCard(
+                    title: '',
+                    content: Column(
+                      children: [
+                        _buildDropdownField(
+                          label: 'Railway',
+                          value: selectedRailway,
+                          items: railways,
+                          onChanged: (val) => setState(() => selectedRailway = val),
+                          isDark: false,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDropdownField(
+                          label: 'Department',
+                          value: selectedDepartment,
+                          items: departments,
+                          onChanged: (val) => setState(() => selectedDepartment = val),
+                          isDark: false,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDropdownField(
+                          label: 'User Depot',
+                          value: selectedDepot,
+                          items: depots,
+                          onChanged: (val) => setState(() => selectedDepot = val),
+                          isDark: false,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDropdownField(
+                          label: 'User Sub Depot',
+                          value: selectedSubDepot,
+                          items: subDepots,
+                          onChanged: (val) => setState(() => selectedSubDepot = val),
+                          isDark: false,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _buildCard(
+                    title: 'Time Period',
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabelText('Current Period'),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: _buildLabelText('From'),
+                            ),
+                            Expanded(
+                              child: _buildSimpleDateField(
+                                controller: currentFromDateController,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: _buildLabelText('To'),
+                            ),
+                            Expanded(
+                              child: _buildSimpleDateField(
+                                controller: currentToDateController,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _buildLabelText('Previous Period'),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: _buildLabelText('From'),
+                            ),
+                            Expanded(
+                              child: _buildSimpleDateField(
+                                controller: previousFromDateController,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: _buildLabelText('To'),
+                            ),
+                            Expanded(
+                              child: _buildSimpleDateField(
+                                controller: previousToDateController,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _buildModifiedCard(
+                    title: '',
+                    content: Column(
+                      children: [
+                        // Improved sliding toggle
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isIncrease = !_isIncrease;
+                              selectedChangeType = _isIncrease ? 1 : 0; // Update selectedChangeType (1 for increase, 0 for decrease)
+                            });
+                          },
+                          child: Container(
+                            width: 200,
+                            height: 50,
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.grey.shade200,
+                            ),
+                            child: Stack(
+                              children: [
+                                // Sliding selector - fixed width to match container sections
+                                AnimatedPositioned(
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeInOut,
+                                  left: _isIncrease ? 0 : 100, // Correct position for half of 200px container width
+                                  top: 0,
+                                  child: Container(
+                                    width: 95, // Exactly half of the parent container
+                                    height: 45, // Adjusted to account for padding
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.blue.shade800,
+                                    ),
+                                  ),
+                                ),
+                                // Labels
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          'Increase (+)',
+                                          style: TextStyle(
+                                            color: _isIncrease ? Colors.white : Colors.black87,
+                                            fontWeight: _isIncrease ? FontWeight.bold : FontWeight.normal,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          'Decrease (-)',
+                                          style: TextStyle(
+                                            color: !_isIncrease ? Colors.white : Colors.black87,
+                                            fontWeight: !_isIncrease ? FontWeight.bold : FontWeight.normal,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // New slider implementation for percentage selection
+                        Row(
+                          children: [
+                            const Text(
+                              'By',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  SliderTheme(
+                                    data: SliderThemeData(
+                                      activeTrackColor: Colors.blue.shade800,
+                                      inactiveTrackColor: Colors.blue.shade100,
+                                      thumbColor: Colors.blue.shade800,
+                                      overlayColor: Colors.blue.shade800.withOpacity(0.2),
+                                      trackHeight: 4,
+                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                                    ),
+                                    child: Slider(
+                                      value: percentageValue,
+                                      min: 0,
+                                      max: 100,
+                                      divisions: 100,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          percentageValue = newValue;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('0%', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade800,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          '${percentageValue.toInt()}%',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                      Text('100%', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  _buildModifiedCard(
+                    title: '',
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSummaryTypeOption(
+                          value: 0,
+                          label: 'Top "N" High Consumption Value Items',
+                        ),
+                        _buildSummaryTypeOption(
+                          value: 1,
+                          label: 'Items having Consumption Value above specified Limit',
+                        ),
+                        _buildSummaryTypeOption(
+                          value: 2,
+                          label: 'Consumption comparison with AAC',
+                        ),
+
+                        if (selectedSummaryType == 0) ...[
+                          const SizedBox(height: 16),
+                          _buildLabelText('Specify "N" No. of Top High Value Items'),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove_circle_outline),
+                                onPressed: () {
+                                  if (topItemsValue > 1) {
+                                    setState(() {
+                                      topItemsValue--;
+                                    });
+                                  }
+                                },
+                                color: Colors.blue.shade800,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      topItemsValue.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add_circle_outline),
+                                onPressed: () {
+                                  setState(() {
+                                    topItemsValue++;
+                                  });
+                                },
+                                color: Colors.blue.shade800,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  // Item Type and Item Usage buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildExpandableButton(
+                          icon: Icons.category_outlined,
+                          label: 'Item Type',
+                          onPressed: () {
+                            setState(() {
+                              showItemType = !showItemType;
+                            });
+                          },
+                          isExpanded: showItemType,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildExpandableButton(
+                          icon: Icons.insights_outlined,
+                          label: 'Item Usage',
+                          onPressed: () {
+                            setState(() {
+                              showItemUsage = !showItemUsage;
+                            });
+                          },
+                          isExpanded: showItemUsage,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Expanded sections for Item Type and Item Usage
+                  if (showItemType)
+                    _buildModifiedCard(
+                      title: '',
+                      content: _buildDropdownField(
+                        label: 'Item Type',
+                        value: selectedItemType,
+                        items: itemTypes,
+                        onChanged: (val) => setState(() => selectedItemType = val),
+                        isDark: false,
+                      ),
+                    ),
+
+                  if (showItemUsage)
+                    _buildModifiedCard(
+                      title: '',
+                      content: _buildDropdownField(
+                        label: 'Item Usage',
+                        value: selectedItemUsage,
+                        items: itemUsages,
+                        onChanged: (val) => setState(() => selectedItemUsage = val),
+                        isDark: false,
+                      ),
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  // Action Buttons - Get Details and Reset
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionButton(
+                          icon: Icons.refresh,
+                          label: 'RESET',
+                          onPressed: () {
+                            setState(() {
+                              // Reset all selection values
+                              selectedRailway = null;
+                              selectedDepartment = null;
+                              selectedDepot = 'All';
+                              selectedSubDepot = null;
+
+                              // Reset Item Type and Item Usage
+                              selectedItemType = null;
+                              selectedItemUsage = null;
+                              showItemType = false;
+                              showItemUsage = false;
+
+                              // Reset control values
+                              selectedSummaryType = 0;
+                              selectedChangeType = 0;
+                              topItemsValue = 10;
+                              percentageValue = 20; // Reset slider value
+
+                              // Reset date controllers
+                              currentFromDateController.text = '28-02-2025';
+                              currentToDateController.text = '29-04-2025';
+                              previousFromDateController.text = '29-12-2024';
+                              previousToDateController.text = '27-02-2025';
+
+                              // Show a snackbar to confirm reset
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('All fields have been reset'),
+                                  backgroundColor: Colors.blue.shade800,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            });
+                          },
+                          isPrimary: false,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildActionButton(
+                          icon: Icons.present_to_all,
+                          label: 'GET DETAILS',
+                          onPressed: () {},
+                          isPrimary: true,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Original styled card widget with title and content - retaining for Time Period and other sections
+  Widget _buildCard({required String title, required Widget content}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade800,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: content,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Modified card widget without blue bar header
+  Widget _buildModifiedCard({required String title, required Widget content}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Title on the top edge of the card
+          if (title.isNotEmpty)
+            Positioned(
+              top: -9,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                color: Colors.white,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.blue.shade800,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          // Content with extra padding at the top
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+            child: content,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Dropdown field with label - adjusted to support field labels on the edge
+  Widget _buildDropdownField({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+    bool isDark = true,
+  }) {
+    final Color textColor = isDark ? Colors.white : Colors.black87;
+    final Color backgroundColor = isDark ? Colors.white.withOpacity(0.15) : Colors.white;
+    final Color borderColor = isDark ? Colors.white.withOpacity(0.3) : Colors.grey.shade300;
+
+    if (label.isEmpty) {
+      // For empty labels (Item Type and Item Usage sections)
+      return Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: borderColor),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: value,
+            hint: Text(
+              'Select',
+              style: TextStyle(
+                color: textColor.withOpacity(0.7),
+              ),
+            ),
+            icon: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: textColor,
+            ),
+            isExpanded: true,
+            dropdownColor: Colors.white,
+            style: TextStyle(
+              color: isDark ? Colors.black87 : textColor,
+              fontSize: 15,
+            ),
+            items: items.map((String item) {
+              return DropdownMenuItem<String>(
+                value: item,
+                child: Text(item),
+              );
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        ),
+      );
+    }
+
+    // For fields with labels
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10), // Space for the label
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: borderColor),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: value,
+                  hint: Text(
+                    'Select $label',
+                    style: TextStyle(
+                      color: textColor.withOpacity(0.7),
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: textColor,
+                  ),
+                  isExpanded: true,
+                  dropdownColor: Colors.white,
+                  style: TextStyle(
+                    color: isDark ? Colors.black87 : textColor,
+                    fontSize: 15,
+                  ),
+                  items: items.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: onChanged,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // Label positioned on the top edge of the field
+        Positioned(
+          top: 0,
+          left: 12,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            color: Colors.white,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade700,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // New simplified date field without the label inside
+  Widget _buildSimpleDateField({
+    required TextEditingController controller,
+  }) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: TextField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+          suffixIcon: Icon(
+            Icons.calendar_today_rounded,
+            size: 18,
+            color: Colors.blue.shade800,
+          ),
+        ),
+        style: const TextStyle(fontSize: 14),
+        onTap: () async {
+          // Parse the date string manually
+          final dateValues = controller.text.split('-');
+          if (dateValues.length == 3) {
+            try {
+              final day = int.parse(dateValues[0]);
+              final month = int.parse(dateValues[1]);
+              final year = int.parse(dateValues[2]);
+
+              final initialDate = DateTime(year, month, day);
+
+              final DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: initialDate,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2030),
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary: Colors.blue.shade800,
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+
+              if (pickedDate != null) {
+                // Format date manually
+                final day = pickedDate.day.toString().padLeft(2, '0');
+                final month = pickedDate.month.toString().padLeft(2, '0');
+                final year = pickedDate.year.toString();
+
+                setState(() {
+                  controller.text = '$day-$month-$year';
+                });
+              }
+            } catch (e) {
+              // Handle parse error
+              print('Date parse error: $e');
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  // Radio button with label
+  Widget _buildRadioButton({
+    required int value,
+    required int groupValue,
+    required String label,
+    required Function(int?) onChanged,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => onChanged(value),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Radio<int>(
+              value: value,
+              groupValue: groupValue,
+              activeColor: Colors.blue.shade800,
+              onChanged: onChanged,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Summary type option radio
+  Widget _buildSummaryTypeOption({
+    required int value,
+    required String label,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => setState(() => selectedSummaryType = value),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Radio<int>(
+                value: value,
+                groupValue: selectedSummaryType,
+                activeColor: Colors.blue.shade800,
+                onChanged: (val) => setState(() => selectedSummaryType = val!),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: selectedSummaryType == value ? FontWeight.w600 : FontWeight.w400,
+                      color: selectedSummaryType == value ? Colors.blue.shade800 : Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Section label text
+  Widget _buildLabelText(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey.shade700,
+        ),
+      ),
+    );
+  }
+
+  // Button with icon and label
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    required bool isPrimary,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isPrimary ? Colors.blue.shade800 : Colors.white,
+        foregroundColor: isPrimary ? Colors.white : Colors.blue.shade800,
+        elevation: isPrimary ? 2 : 0,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: isPrimary
+              ? BorderSide.none
+              : BorderSide(color: Colors.blue.shade800),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: isPrimary ? 0.5 : 0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Expandable button with + sign
+  Widget _buildExpandableButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    required bool isExpanded,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.blue.shade800,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.blue.shade800),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            isExpanded ? Icons.remove : Icons.add,
+            size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+}
