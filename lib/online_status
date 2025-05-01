@@ -1,0 +1,438 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Online Bill Status',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue.shade800,
+        ),
+        useMaterial3: true,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.grey.shade50,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          isDense: true,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue.shade800,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.blue.shade800,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            side: BorderSide(color: Colors.blue.shade800),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+      home: const BillStatusPage(),
+    );
+  }
+}
+
+class BillStatusPage extends StatefulWidget {
+  const BillStatusPage({super.key});
+
+  @override
+  State<BillStatusPage> createState() => _BillStatusPageState();
+}
+
+class _BillStatusPageState extends State<BillStatusPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _startDate = '28-04-2024';
+  String _endDate = '30-04-2025';
+  String _consigneeRailway = 'IREPS-TESTING';
+  String _payingAuthorityRailway = 'IREPS-TESTING';
+  String _consigneeDetails = '36640-SR. SECTION ENGINEER-I/PS/';
+
+  // Increased dropdown height by 20%
+  final double _dropdownHeight = 48 * 1.2;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade800,
+        elevation: 0,
+        title: const Text(
+          'On-Line Bill Status',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {},
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16), // Increased padding for neatness
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Date Range Section
+              Card(
+                elevation: 1.5, // Slightly increased elevation for better visibility
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Increased border radius
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16), // Increased padding
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'From',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Slightly increased font size
+                              ),
+                            ),
+                            const SizedBox(height: 6), // Increased spacing
+                            InkWell(
+                              onTap: () {
+                                // Date picker functionality would go here
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), // Increased padding by ~20%
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.white,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        _startDate,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                    Icon(Icons.calendar_today, size: 16, color: Colors.blue.shade800),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16), // Increased spacing
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'To',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14, // Slightly increased font size
+                              ),
+                            ),
+                            const SizedBox(height: 6), // Increased spacing
+                            InkWell(
+                              onTap: () {
+                                // Date picker functionality would go here
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), // Increased padding by ~20%
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.white,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        _endDate,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                    Icon(Icons.calendar_today, size: 16, color: Colors.blue.shade800),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16), // Increased spacing
+
+              // Combined Railway and Consignee Information Section
+              Card(
+                elevation: 1.5, // Slightly increased elevation for better visibility
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Increased border radius
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16), // Increased padding
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Consignee Railway
+                      const Text(
+                        'Consignee Railway',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14, // Slightly increased font size
+                        ),
+                      ),
+                      const SizedBox(height: 6), // Increased spacing
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        height: _dropdownHeight, // Increased height by 20%
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: _consigneeRailway,
+                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade800, size: 24), // Slightly increased icon size
+                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                            itemHeight: null, // Allow flexible item height
+                            isDense: true,
+                            items: ['IREPS-TESTING'].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4), // Added padding for item
+                                  child: Text(value),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _consigneeRailway = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16), // Increased spacing
+
+                      // Paying Authority Railway
+                      const Text(
+                        'Paying Authority Railway',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14, // Slightly increased font size
+                        ),
+                      ),
+                      const SizedBox(height: 6), // Increased spacing
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        height: _dropdownHeight, // Increased height by 20%
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: _payingAuthorityRailway,
+                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade800, size: 24), // Slightly increased icon size
+                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                            itemHeight: null, // Allow flexible item height
+                            isDense: true,
+                            items: ['IREPS-TESTING'].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4), // Added padding for item
+                                  child: Text(value),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _payingAuthorityRailway = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16), // Increased spacing
+
+                      // Consignee Details
+                      const Text(
+                        'Consignee Details',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14, // Slightly increased font size
+                        ),
+                      ),
+                      const SizedBox(height: 6), // Increased spacing
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                        height: _dropdownHeight, // Increased height by 20%
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: _consigneeDetails,
+                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade800, size: 24), // Slightly increased icon size
+                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                            itemHeight: null, // Allow flexible item height
+                            isDense: true,
+                            items: ['36640-SR. SECTION ENGINEER-I/PS/'].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4), // Added padding for item
+                                  child: Text(value, overflow: TextOverflow.ellipsis),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _consigneeDetails = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16), // Increased spacing
+
+              // Search Section
+              Card(
+                elevation: 1.5, // Slightly increased elevation for better visibility
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Increased border radius
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16), // Increased padding
+                  child: TextField(
+                    controller: _searchController,
+                    style: const TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      hintText: 'Enter PO No./Vendor Name/Description',
+                      hintStyle: const TextStyle(fontSize: 13),
+                      prefixIcon: Icon(Icons.search, color: Colors.blue.shade800, size: 18),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12), // Increased padding
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24), // Increased spacing
+
+              // Action Buttons - Icons removed
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      // Icon removed as requested
+                      child: const Text('Get Details',
+                        style: TextStyle(
+                          fontSize: 14, // Slightly increased font size
+                          fontWeight: FontWeight.w500, // Made text semi-bold
+                        ),
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(width: 16), // Increased spacing
+                  Expanded(
+                    child: OutlinedButton(
+                      // Icon removed as requested
+                      child: const Text('Reset',
+                        style: TextStyle(
+                          fontSize: 14, // Slightly increased font size
+                          fontWeight: FontWeight.w500, // Made text semi-bold
+                        ),
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
