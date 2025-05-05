@@ -1,0 +1,299 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'CRN Summary',
+      debugShowCheckedModeBanner: false, // Remove debug banner
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade800),
+        useMaterial3: true,
+      ),
+      home: const CRNSummaryPage(),
+    );
+  }
+}
+
+class CRNSummaryPage extends StatefulWidget {
+  const CRNSummaryPage({super.key});
+
+  @override
+  State<CRNSummaryPage> createState() => _CRNSummaryPageState();
+}
+
+class _CRNSummaryPageState extends State<CRNSummaryPage> {
+  final TextEditingController _fromDateController = TextEditingController(text: "02-02-2025");
+  final TextEditingController _toDateController = TextEditingController(text: "05-05-2025");
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade800,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+          onPressed: () {
+            // Handle back navigation
+          },
+        ),
+        title: const Text('CRN Summary',
+            style: TextStyle(color: Colors.white, fontSize: 18)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white, size: 20),
+            onPressed: () {
+              // Handle home navigation
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionCard(
+                context,
+                children: [
+                  // Date rows
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          label: 'From',
+                          controller: _fromDateController,
+                          suffixIcon: Icons.calendar_today,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextField(
+                          label: 'To',
+                          controller: _toDateController,
+                          suffixIcon: Icons.calendar_today,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Railway (full width)
+                  _buildDropdownField(
+                    label: 'Railway',
+                    value: 'IREPS-TESTING',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Unit Type (full width)
+                  _buildDropdownField(
+                    label: 'Unit Type',
+                    value: 'Zonal HQ / PU HQ',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Unit Name (full width)
+                  _buildDropdownField(
+                    label: 'Unit Name',
+                    value: 'EPS/UD',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Select Department (full width)
+                  _buildDropdownField(
+                    label: 'Select Department',
+                    value: '--Select Department--',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Select User Depot (full width)
+                  _buildDropdownField(
+                    label: 'Select User Depot',
+                    value: 'All',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Sub-Consignee (full width)
+                  _buildDropdownField(
+                    label: 'Sub-Consignee',
+                    value: 'All',
+                    onChanged: (value) {},
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPrimaryButton(
+                      label: 'Submit',
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildSecondaryButton(
+                      label: 'Reset',
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionCard(BuildContext context, {required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required String value,
+    required Function(String?) onChanged,
+    List<String>? items,
+  }) {
+    final dropdownItems = items ?? [value];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Container(
+          height: 40, // Fixed height for dropdowns
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              icon: Icon(Icons.arrow_drop_down, size: 20, color: Colors.blue.shade800),
+              items: dropdownItems.map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(item, style: const TextStyle(fontSize: 13)),
+              )).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    IconData? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        SizedBox(
+          height: 40, // Fixed height for text fields
+          child: TextField(
+            controller: controller,
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              suffixIcon: suffixIcon != null ? Icon(suffixIcon, size: 18) : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPrimaryButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue.shade800,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+          side: BorderSide(color: Colors.blue.shade800),
+        ),
+        elevation: 2, // Added elevation for better visual effect
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 14)),
+    );
+  }
+
+  Widget _buildSecondaryButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.blue.shade800,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        side: BorderSide(color: Colors.blue.shade800),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 14)),
+    );
+  }
+}
