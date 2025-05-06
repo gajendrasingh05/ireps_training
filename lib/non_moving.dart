@@ -1,0 +1,653 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'High Value Items',
+      debugShowCheckedModeBanner: false, // Remove debug banner
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade800),
+        useMaterial3: true,
+      ),
+      home: const HighValueItemsPage(),
+    );
+  }
+}
+
+class HighValueItemsPage extends StatefulWidget {
+  const HighValueItemsPage({super.key});
+
+  @override
+  State<HighValueItemsPage> createState() => _HighValueItemsPageState();
+}
+
+class _HighValueItemsPageState extends State<HighValueItemsPage> with SingleTickerProviderStateMixin {
+  // Selected month value
+  int _selectedMonth = 1;
+
+  // Track expanded filter sections
+  final Map<String, bool> _expandedFilters = {
+    'Item Type': false,
+    'Item Usage': false,
+    'Item Category': false,
+    'Stock/Non-Stock': false,
+  };
+
+  late AnimationController _animationController;
+  late Map<String, Animation<double>> _animations;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    // Create animations for each filter
+    _animations = {
+      for (var filter in _expandedFilters.keys)
+        filter: CurvedAnimation(
+          parent: _animationController,
+          curve: Curves.easeInOut,
+        ),
+    };
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _toggleFilter(String filterName) {
+    setState(() {
+      // Toggle the selected filter
+      _expandedFilters[filterName] = !_expandedFilters[filterName]!;
+
+      // If any filter is expanded, forward the animation, otherwise reverse it
+      if (_expandedFilters.values.any((isExpanded) => isExpanded)) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+  }
+
+  // Increase the month value (with max limit of 12)
+  void _incrementMonth() {
+    setState(() {
+      if (_selectedMonth < 12) {
+        _selectedMonth++;
+      }
+    });
+  }
+
+  // Decrease the month value (with min limit of 1)
+  void _decrementMonth() {
+    setState(() {
+      if (_selectedMonth > 1) {
+        _selectedMonth--;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade800,
+        title: const Text('Non-Moving Items',
+            style: TextStyle(color: Colors.white, fontSize: 18)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+          onPressed: () {
+            // Handle back navigation
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home, color: Colors.white, size: 20),
+            onPressed: () {
+              // Handle home navigation
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionCard(
+                context,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDropdownField(
+                          label: 'Railway',
+                          value: 'IREPS-TESTING',
+                          onChanged: (value) {},
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildDropdownField(
+                          label: 'Unit Type',
+                          value: 'Zonal HQ / PU HQ',
+                          onChanged: (value) {},
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDropdownField(
+                          label: 'Unit Name',
+                          value: 'EPS/UD',
+                          onChanged: (value) {},
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildDropdownField(
+                          label: 'Department',
+                          value: 'Mechanical',
+                          onChanged: (value) {},
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDropdownField(
+                    label: 'User Depot',
+                    value: '36640-SR. SECTION ENGINEER-I/PS/NEW DELHI',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDropdownField(
+                    label: 'User Sub Depot',
+                    value: '00-SSE/EPS/UD',
+                    onChanged: (value) {},
+                  ),
+                  const SizedBox(height: 12),
+                  // Month selector moved to its own row below User Sub Depot
+                  _buildMonthSelector(),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildFilterOptionsCard(),
+
+              // Display all filter dropdowns (expanded or collapsed)
+              ..._expandedFilters.keys.map((filterName) {
+                return SizeTransition(
+                  sizeFactor: _animations[filterName]!,
+                  child: _expandedFilters[filterName]!
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      _buildFilterDropdown(filterName),
+                    ],
+                  )
+                      : const SizedBox.shrink(),
+                );
+              }).toList(),
+
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPrimaryButton(
+                      label: 'Get Details',
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildSecondaryButton(
+                      label: 'Reset',
+                      onPressed: () {
+                        setState(() {
+                          // Reset all expanded filters
+                          for (var filter in _expandedFilters.keys) {
+                            _expandedFilters[filter] = false;
+                          }
+                          _animationController.reverse();
+
+                          // Reset month value to 1
+                          _selectedMonth = 1;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Updated method to build the month selector UI with interactive controls
+  Widget _buildMonthSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Month's",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  children: [
+                    // Decrement button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _decrementMonth,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          bottomLeft: Radius.circular(5),
+                        ),
+                        child: SizedBox(
+                          width: 40,
+                          height: 38,
+                          child: Icon(
+                            Icons.remove,
+                            size: 16,
+                            color: _selectedMonth > 1 ? Colors.blue.shade800 : Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Vertical separator
+                    Container(
+                      width: 1,
+                      height: 20,
+                      color: Colors.grey.shade300,
+                    ),
+
+                    // Month display
+                    Expanded(
+                      child: Center(
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.blue.shade800,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "$_selectedMonth",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Vertical separator
+                    Container(
+                      width: 1,
+                      height: 20,
+                      color: Colors.grey.shade300,
+                    ),
+
+                    // Increment button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _incrementMonth,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(5),
+                          bottomRight: Radius.circular(5),
+                        ),
+                        child: SizedBox(
+                          width: 40,
+                          height: 38,
+                          child: Icon(
+                            Icons.add,
+                            size: 16,
+                            color: _selectedMonth < 12 ? Colors.blue.shade800 : Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Center(
+          child: Text(
+            'item not issued since last $_selectedMonth ${_selectedMonth == 1 ? 'month' : 'months'}',
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterOptionsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              _buildFilterChip(
+                icon: Icons.category,
+                label: 'Item Type',
+                onTap: () => _toggleFilter('Item Type'),
+                isSelected: _expandedFilters['Item Type']!,
+              ),
+              const SizedBox(width: 10),
+              _buildFilterChip(
+                icon: Icons.add_shopping_cart,
+                label: 'Item Usage',
+                onTap: () => _toggleFilter('Item Usage'),
+                isSelected: _expandedFilters['Item Usage']!,
+              ),
+              const SizedBox(width: 10),
+              _buildFilterChip(
+                icon: Icons.format_list_bulleted,
+                label: 'Item Category',
+                onTap: () => _toggleFilter('Item Category'),
+                isSelected: _expandedFilters['Item Category']!,
+              ),
+              const SizedBox(width: 10),
+              _buildFilterChip(
+                icon: Icons.inventory_2,
+                label: 'Stock/Non-Stock',
+                onTap: () => _toggleFilter('Stock/Non-Stock'),
+                isSelected: _expandedFilters['Stock/Non-Stock']!,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterDropdown(String filterName) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  filterName,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, size: 18, color: Colors.blue.shade800),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    setState(() {
+                      _expandedFilters[filterName] = false;
+                      if (!_expandedFilters.values.any((isExpanded) => isExpanded)) {
+                        _animationController.reverse();
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Adding a simple dropdown for each filter
+            _buildFilterSelectionDropdown(filterName),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterSelectionDropdown(String filterName) {
+    // Define options based on filter type
+    List<String> options;
+    String defaultValue;
+
+    switch (filterName) {
+      case 'Item Type':
+        options = ['All', 'Consumable', 'Non-Consumable', 'Machinery', 'Equipment', 'Tools'];
+        defaultValue = 'All';
+        break;
+      case 'Item Usage':
+        options = ['All', 'Regular Use', 'Emergency Use', 'Maintenance', 'Operational', 'Spare Parts'];
+        defaultValue = 'All';
+        break;
+      case 'Item Category':
+        options = ['All', 'Category A', 'Category B', 'Category C', 'Category D', 'Category E'];
+        defaultValue = 'All';
+        break;
+      case 'Stock/Non-Stock':
+        options = ['All', 'Stock Item', 'Non-Stock Item', 'Limited Stock', 'Special Order'];
+        defaultValue = 'All';
+        break;
+      default:
+        options = ['All'];
+        defaultValue = 'All';
+    }
+
+    return _buildDropdownField(
+      label: 'Select $filterName',
+      value: defaultValue,
+      onChanged: (value) {
+        // Handle value change
+      },
+      items: options,
+    );
+  }
+
+  Widget _buildFilterChip({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required bool isSelected,
+  }) {
+    return Material(
+      color: isSelected ? Colors.blue.shade100 : Colors.blue.shade50,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 16, color: Colors.blue.shade800),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.blue.shade800,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(width: 4),
+                Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.blue.shade800),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionCard(BuildContext context, {required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required String value,
+    required Function(String?) onChanged,
+    List<String>? items,
+  }) {
+    final dropdownItems = items ?? [value];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Container(
+          height: 40, // Fixed height for dropdowns
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              icon: Icon(Icons.arrow_drop_down, size: 20, color: Colors.blue.shade800),
+              items: dropdownItems.map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(item, style: const TextStyle(fontSize: 13)),
+              )).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPrimaryButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue.shade800,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+          side: BorderSide(color: Colors.blue.shade800),
+        ),
+        elevation: 2, // Added elevation for better visual effect
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 14)),
+    );
+  }
+
+  Widget _buildSecondaryButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.blue.shade800,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        side: BorderSide(color: Colors.blue.shade800),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 14)),
+    );
+  }
+}
