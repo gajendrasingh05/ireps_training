@@ -1,299 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Add this class at the top of your file
-class DropdownSearch<T> extends StatefulWidget {
-  final List<T> items;
-  final T? selectedItem;
-  final String Function(T) itemAsString;
-  final ValueChanged<T?> onChanged;
-  final String? hintText;
-  final String? labelText;
-  final bool showSearchBox;
-  final Widget? prefixIcon;
-  final InputDecoration? searchBoxDecoration;
-  final OutlineInputBorder? dropdownSearchDecoration;
-  final double borderRadius;
-  final Color borderColor;
-  final double borderWidth;
-
-  const DropdownSearch({
-    Key? key,
-    required this.items,
-    this.selectedItem,
-    required this.itemAsString,
-    required this.onChanged,
-    this.hintText,
-    this.labelText,
-    this.showSearchBox = true,
-    this.prefixIcon,
-    this.searchBoxDecoration,
-    this.dropdownSearchDecoration,
-    this.borderRadius = 20.0,
-    this.borderColor = Colors.blue,
-    this.borderWidth = 1.5,
-  }) : super(key: key);
-
-  @override
-  State<DropdownSearch<T>> createState() => _DropdownSearchState<T>();
-}
-
-class _DropdownSearchState<T> extends State<DropdownSearch<T>> {
-  final LayerLink _layerLink = LayerLink();
-  final TextEditingController _searchController = TextEditingController();
-  List<T> _filteredItems = [];
-  bool _isDropdownOpen = false;
-  OverlayEntry? _overlayEntry;
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    _filteredItems = List.from(widget.items);
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus && _isDropdownOpen) {
-        _closeDropdown();
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant DropdownSearch<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.items != widget.items) {
-      _filteredItems = List.from(widget.items);
-    }
-  }
-
-  @override
-  void dispose() {
-    _closeDropdown();
-    _searchController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  void _filterItems(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        _filteredItems = List.from(widget.items);
-      });
-    } else {
-      setState(() {
-        _filteredItems = widget.items
-            .where((item) => widget
-            .itemAsString(item)
-            .toLowerCase()
-            .contains(query.toLowerCase()))
-            .toList();
-      });
-    }
-
-    // Rebuild the overlay with the updated filtered items
-    _updateOverlay();
-  }
-
-  void _toggleDropdown() {
-    if (_isDropdownOpen) {
-      _closeDropdown();
-    } else {
-      _openDropdown();
-    }
-  }
-
-  void _openDropdown() {
-    _focusNode.requestFocus();
-    _isDropdownOpen = true;
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-    setState(() {});
-  }
-
-  void _closeDropdown() {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = null;
-    }
-    _isDropdownOpen = false;
-    _searchController.clear();
-    _filteredItems = List.from(widget.items);
-    setState(() {});
-  }
-
-  void _updateOverlay() {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = _createOverlayEntry();
-      Overlay.of(context).insert(_overlayEntry!);
-    }
-  }
-
-  OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var size = renderBox.size;
-    var offset = renderBox.localToGlobal(Offset.zero);
-
-    return OverlayEntry(
-      builder: (context) {
-        return Positioned(
-          width: size.width,
-          child: CompositedTransformFollower(
-            link: _layerLink,
-            showWhenUnlinked: false,
-            offset: Offset(0.0, size.height + 5.0),
-            child: Material(
-              elevation: 4.0,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: 300,
-                  minWidth: size.width,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(widget.borderRadius),
-                  border: Border.all(
-                    color: widget.borderColor,
-                    width: widget.borderWidth,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (widget.showSearchBox)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: widget.searchBoxDecoration ??
-                              InputDecoration(
-                                hintText: 'Search...',
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 10,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.blue.shade800,
-                                  size: 20,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: Colors.blue.shade800,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: Colors.blue.shade800,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: Colors.blue.shade800,
-                                    width: 2,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.white,
-                              ),
-                          onChanged: _filterItems,
-                        ),
-                      ),
-                    Divider(
-                      height: 1,
-                      thickness: 1.5,
-                      color: Colors.blue.shade100,
-                    ),
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount: _filteredItems.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              widget.onChanged(_filteredItems[index]);
-                              _closeDropdown();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Text(
-                                widget.itemAsString(_filteredItems[index]),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: InkWell(
-        onTap: _toggleDropdown,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            border: Border.all(
-              color: widget.borderColor,
-              width: widget.borderWidth,
-            ),
-          ),
-          child: Row(
-            children: [
-              if (widget.prefixIcon != null) widget.prefixIcon!,
-              Expanded(
-                child: Text(
-                  widget.selectedItem != null
-                      ? widget.itemAsString(widget.selectedItem!)
-                      : widget.hintText ?? 'Select an item',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: widget.selectedItem != null
-                        ? Colors.black
-                        : Colors.grey.shade600,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Icon(
-                _isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: Colors.blue.shade800,
-                size: 28,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 void main() {
   runApp(const MyApp());
 }
@@ -330,6 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   late TabController _tabController;
   final TextEditingController _demandNoController = TextEditingController();
   final TextEditingController _itemDescriptionController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController(); // Added for dropdown search
 
   DateTime _fromDate = DateTime(2024, 6, 11);
   DateTime _toDate = DateTime(2025, 5, 5);
@@ -357,50 +64,128 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _tabController.dispose();
     _demandNoController.dispose();
     _itemDescriptionController.dispose();
+    _searchController.dispose(); // Added for dropdown search
     super.dispose();
   }
 
-  // Filter methods
-  void _filterStatusOptions() {
-    if (_statusSearchController.text.isEmpty) {
-      setState(() {
-        _filteredStatusOptions = List.from(_statusOptions);
-      });
-    } else {
-      setState(() {
-        _filteredStatusOptions = _statusOptions
-            .where((option) => option.toLowerCase().contains(_statusSearchController.text.toLowerCase()))
-            .toList();
-      });
-    }
-  }
+  // Improved searchable dropdown widget (using popup menu)
+  Widget _buildPopupSearchableDropdown({
+    required String value,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return PopupMenuButton<String>(
+          initialValue: value,
+          onSelected: onChanged,
+          itemBuilder: (BuildContext context) {
+            TextEditingController searchController = TextEditingController();
+            List<String> filteredItems = List.from(items);
 
-  void _filterIndentorOptions() {
-    if (_indentorSearchController.text.isEmpty) {
-      setState(() {
-        _filteredIndentorOptions = List.from(_indentorOptions);
-      });
-    } else {
-      setState(() {
-        _filteredIndentorOptions = _indentorOptions
-            .where((option) => option.toLowerCase().contains(_indentorSearchController.text.toLowerCase()))
-            .toList();
-      });
-    }
-  }
+            updateFilter(String query) {
+              if (query.isEmpty) {
+                filteredItems = List.from(items);
+              } else {
+                filteredItems = items
+                    .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+                    .toList();
+              }
+            }
 
-  void _filterConsigneeOptions() {
-    if (_consigneeSearchController.text.isEmpty) {
-      setState(() {
-        _filteredConsigneeOptions = List.from(_consigneeOptions);
-      });
-    } else {
-      setState(() {
-        _filteredConsigneeOptions = _consigneeOptions
-            .where((option) => option.toLowerCase().contains(_consigneeSearchController.text.toLowerCase()))
-            .toList();
-      });
-    }
+            return [
+              PopupMenuItem<String>(
+                enabled: false,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  width: double.infinity,
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.blue.shade800,
+                        size: 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    onChanged: (value) {
+                      updateFilter(value);
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+              PopupMenuItem<String>(
+                enabled: false,
+                height: 1,
+                child: Divider(height: 1, thickness: 1.5, color: Colors.blue.shade100),
+              ),
+              ...filteredItems.map((String item) {
+                return PopupMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ];
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.blue.shade800,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.blue.shade800,
+                  size: 28,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Custom date formatter without using intl package
@@ -693,20 +478,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           // Status Dropdown
           _buildFormField(
             'Status',
-            DropdownSearch<String>(
+            _buildPopupSearchableDropdown(
+              value: _statusValue,
               items: _statusOptions,
-              selectedItem: _statusValue,
-              itemAsString: (item) => item,
-              onChanged: (value) {
-                if (value != null) {
+              onChanged: (String? newValue) {
+                if (newValue != null) {
                   setState(() {
-                    _statusValue = value;
+                    _statusValue = newValue;
                   });
                 }
               },
-              borderColor: Colors.blue.shade800,
-              borderRadius: 20,
-              borderWidth: 1.5,
             ),
           ),
 
@@ -727,40 +508,32 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           // Indentor Dropdown
           _buildFormField(
             'Indentor',
-            DropdownSearch<String>(
+            _buildPopupSearchableDropdown(
+              value: _indentorValue,
               items: _indentorOptions,
-              selectedItem: _indentorValue,
-              itemAsString: (item) => item,
-              onChanged: (value) {
-                if (value != null) {
+              onChanged: (String? newValue) {
+                if (newValue != null) {
                   setState(() {
-                    _indentorValue = value;
+                    _indentorValue = newValue;
                   });
                 }
               },
-              borderColor: Colors.blue.shade800,
-              borderRadius: 20,
-              borderWidth: 1.5,
             ),
           ),
 
           // Consignee Dropdown
           _buildFormField(
             'Consignee',
-            DropdownSearch<String>(
+            _buildPopupSearchableDropdown(
+              value: _consigneeValue,
               items: _consigneeOptions,
-              selectedItem: _consigneeValue,
-              itemAsString: (item) => item,
-              onChanged: (value) {
-                if (value != null) {
+              onChanged: (String? newValue) {
+                if (newValue != null) {
                   setState(() {
-                    _consigneeValue = value;
+                    _consigneeValue = newValue;
                   });
                 }
               },
-              borderColor: Colors.blue.shade800,
-              borderRadius: 20,
-              borderWidth: 1.5,
             ),
           ),
 
@@ -844,132 +617,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  // New searchable dropdown widget
-  Widget _buildSearchableDropdown({
-    required String value,
-    required TextEditingController searchController,
-    required List<String> items,
-    required Function(String?) onChanged,
-  }) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-        ),
-      ),
-      child: DropdownButtonFormField<String>(
-        value: items.contains(value) ? value : items.isNotEmpty ? items[0] : null,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          fillColor: Colors.white,
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-          ),
-        ),
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: Colors.black,
-        ),
-        icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade800, size: 28),
-        isExpanded: true,
-        dropdownColor: Colors.white,
-        menuMaxHeight: 300,
-        selectedItemBuilder: (BuildContext context) {
-          return items.map<Widget>((String item) {
-            return Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                item,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            );
-          }).toList();
-        },
-        items: [
-          DropdownMenuItem<String>(
-            value: null,
-            enabled: false,
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      prefixIcon: Icon(Icons.search, color: Colors.blue.shade800, size: 20),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 2),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                    onTap: () {
-                      // Prevent the dropdown from closing when the text field is tapped
-                      // This is handled by passing the GestureTapCallback to the onTap parameter
-                    },
-                  ),
-                ),
-                Divider(height: 1, thickness: 1.5, color: Colors.blue.shade100),
-              ],
-            ),
-          ),
-          ...items.map<DropdownMenuItem<String>>((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                item,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            );
-          }).toList(),
-        ],
-        onChanged: onChanged,
       ),
     );
   }
