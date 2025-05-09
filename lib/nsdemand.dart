@@ -36,7 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   late TabController _tabController;
   final TextEditingController _demandNoController = TextEditingController();
   final TextEditingController _itemDescriptionController = TextEditingController();
-  final TextEditingController _searchController = TextEditingController(); // Added for dropdown search
+  final TextEditingController _searchController = TextEditingController();
 
   DateTime _fromDate = DateTime(2024, 6, 11);
   DateTime _toDate = DateTime(2025, 5, 5);
@@ -45,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   String _indentorValue = 'All';
   String _consigneeValue = 'All';
 
-  // Full lists of options
+  // Lists for dropdown options
   final List<String> _statusOptions = ['All', 'Pending', 'Completed', 'In Progress'];
   final List<String> _indentorOptions = ['All', 'Indentor 1', 'Indentor 2', 'Indentor 3'];
   final List<String> _consigneeOptions = ['All', 'Consignee 1', 'Consignee 2', 'Consignee 3'];
@@ -64,128 +64,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _tabController.dispose();
     _demandNoController.dispose();
     _itemDescriptionController.dispose();
-    _searchController.dispose(); // Added for dropdown search
+    _searchController.dispose();
     super.dispose();
-  }
-
-  // Improved searchable dropdown widget (using popup menu)
-  Widget _buildPopupSearchableDropdown({
-    required String value,
-    required List<String> items,
-    required Function(String?) onChanged,
-  }) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return PopupMenuButton<String>(
-          initialValue: value,
-          onSelected: onChanged,
-          itemBuilder: (BuildContext context) {
-            TextEditingController searchController = TextEditingController();
-            List<String> filteredItems = List.from(items);
-
-            updateFilter(String query) {
-              if (query.isEmpty) {
-                filteredItems = List.from(items);
-              } else {
-                filteredItems = items
-                    .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-                    .toList();
-              }
-            }
-
-            return [
-              PopupMenuItem<String>(
-                enabled: false,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  width: double.infinity,
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.blue.shade800,
-                        size: 20,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade800, width: 2),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                    onChanged: (value) {
-                      updateFilter(value);
-                      setState(() {});
-                    },
-                  ),
-                ),
-              ),
-              PopupMenuItem<String>(
-                enabled: false,
-                height: 1,
-                child: Divider(height: 1, thickness: 1.5, color: Colors.blue.shade100),
-              ),
-              ...filteredItems.map((String item) {
-                return PopupMenuItem<String>(
-                  value: item,
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ];
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.blue.shade800,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.blue.shade800,
-                  size: 28,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   // Custom date formatter without using intl package
@@ -225,6 +105,111 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         }
       });
     }
+  }
+
+  // Method to show dropdown with search
+  Future<void> _showDropdownSearch(
+      BuildContext context,
+      String title,
+      List<String> items,
+      String currentValue,
+      Function(String) onSelect,
+      ) async {
+    _searchController.clear();
+    List<String> filteredItems = List.from(items);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade800,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              contentPadding: const EdgeInsets.only(top: 16, left: 24, right: 24),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search),
+                        hintText: 'Search ${title.toLowerCase()}',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.blue.shade800),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          filteredItems = items
+                              .where((item) => item.toLowerCase().contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          return ListTile(
+                            title: Text(item),
+                            tileColor: item == currentValue ? Colors.blue.shade50 : null,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            onTap: () {
+                              onSelect(item);
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('CANCEL'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -475,18 +460,24 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Status Dropdown
+          // Status Dropdown with Search
           _buildFormField(
             'Status',
-            _buildPopupSearchableDropdown(
-              value: _statusValue,
-              items: _statusOptions,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _statusValue = newValue;
-                  });
-                }
+            _buildCustomDropdown(
+              _statusValue,
+              'Select Status',
+                  () {
+                _showDropdownSearch(
+                  context,
+                  'Select Status',
+                  _statusOptions,
+                  _statusValue,
+                      (value) {
+                    setState(() {
+                      _statusValue = value;
+                    });
+                  },
+                );
               },
             ),
           ),
@@ -505,34 +496,46 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ),
           ),
 
-          // Indentor Dropdown
+          // Indentor Dropdown with Search
           _buildFormField(
             'Indentor',
-            _buildPopupSearchableDropdown(
-              value: _indentorValue,
-              items: _indentorOptions,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _indentorValue = newValue;
-                  });
-                }
+            _buildCustomDropdown(
+              _indentorValue,
+              'Select Indentor',
+                  () {
+                _showDropdownSearch(
+                  context,
+                  'Select Indentor',
+                  _indentorOptions,
+                  _indentorValue,
+                      (value) {
+                    setState(() {
+                      _indentorValue = value;
+                    });
+                  },
+                );
               },
             ),
           ),
 
-          // Consignee Dropdown
+          // Consignee Dropdown with Search
           _buildFormField(
             'Consignee',
-            _buildPopupSearchableDropdown(
-              value: _consigneeValue,
-              items: _consigneeOptions,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _consigneeValue = newValue;
-                  });
-                }
+            _buildCustomDropdown(
+              _consigneeValue,
+              'Select Consignee',
+                  () {
+                _showDropdownSearch(
+                  context,
+                  'Select Consignee',
+                  _consigneeOptions,
+                  _consigneeValue,
+                      (value) {
+                    setState(() {
+                      _consigneeValue = value;
+                    });
+                  },
+                );
               },
             ),
           ),
@@ -617,6 +620,37 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCustomDropdown(String value, String hint, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.blue.shade800),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+                color: Colors.black,
+              ),
+            ),
+            Icon(
+              Icons.arrow_drop_down,
+              color: Colors.blue.shade800,
+            ),
+          ],
+        ),
       ),
     );
   }
