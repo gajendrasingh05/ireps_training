@@ -37,12 +37,27 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   final TextEditingController _demandNoController = TextEditingController();
   final TextEditingController _itemDescriptionController = TextEditingController();
 
+  // Search controllers for dropdowns
+  final TextEditingController _statusSearchController = TextEditingController();
+  final TextEditingController _indentorSearchController = TextEditingController();
+  final TextEditingController _consigneeSearchController = TextEditingController();
+
   DateTime _fromDate = DateTime(2024, 6, 11);
   DateTime _toDate = DateTime(2025, 5, 5);
 
   String _statusValue = 'All';
   String _indentorValue = 'All';
   String _consigneeValue = 'All';
+
+  // Full lists of options
+  final List<String> _statusOptions = ['All', 'Pending', 'Completed', 'In Progress'];
+  final List<String> _indentorOptions = ['All', 'Indentor 1', 'Indentor 2', 'Indentor 3'];
+  final List<String> _consigneeOptions = ['All', 'Consignee 1', 'Consignee 2', 'Consignee 3'];
+
+  // Filtered lists for search
+  List<String> _filteredStatusOptions = [];
+  List<String> _filteredIndentorOptions = [];
+  List<String> _filteredConsigneeOptions = [];
 
   @override
   void initState() {
@@ -51,6 +66,22 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _tabController.addListener(() {
       setState(() {}); // This is needed to update the selected tab highlight
     });
+
+    // Initialize filtered lists with full options
+    _filteredStatusOptions = List.from(_statusOptions);
+    _filteredIndentorOptions = List.from(_indentorOptions);
+    _filteredConsigneeOptions = List.from(_consigneeOptions);
+
+    // Add listeners to search controllers
+    _statusSearchController.addListener(() {
+      _filterStatusOptions();
+    });
+    _indentorSearchController.addListener(() {
+      _filterIndentorOptions();
+    });
+    _consigneeSearchController.addListener(() {
+      _filterConsigneeOptions();
+    });
   }
 
   @override
@@ -58,7 +89,53 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _tabController.dispose();
     _demandNoController.dispose();
     _itemDescriptionController.dispose();
+    _statusSearchController.dispose();
+    _indentorSearchController.dispose();
+    _consigneeSearchController.dispose();
     super.dispose();
+  }
+
+  // Filter methods
+  void _filterStatusOptions() {
+    if (_statusSearchController.text.isEmpty) {
+      setState(() {
+        _filteredStatusOptions = List.from(_statusOptions);
+      });
+    } else {
+      setState(() {
+        _filteredStatusOptions = _statusOptions
+            .where((option) => option.toLowerCase().contains(_statusSearchController.text.toLowerCase()))
+            .toList();
+      });
+    }
+  }
+
+  void _filterIndentorOptions() {
+    if (_indentorSearchController.text.isEmpty) {
+      setState(() {
+        _filteredIndentorOptions = List.from(_indentorOptions);
+      });
+    } else {
+      setState(() {
+        _filteredIndentorOptions = _indentorOptions
+            .where((option) => option.toLowerCase().contains(_indentorSearchController.text.toLowerCase()))
+            .toList();
+      });
+    }
+  }
+
+  void _filterConsigneeOptions() {
+    if (_consigneeSearchController.text.isEmpty) {
+      setState(() {
+        _filteredConsigneeOptions = List.from(_consigneeOptions);
+      });
+    } else {
+      setState(() {
+        _filteredConsigneeOptions = _consigneeOptions
+            .where((option) => option.toLowerCase().contains(_consigneeSearchController.text.toLowerCase()))
+            .toList();
+      });
+    }
   }
 
   // Custom date formatter without using intl package
@@ -351,25 +428,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           // Status Dropdown
           _buildFormField(
             'Status',
-            DropdownButtonFormField<String>(
+            _buildSearchableDropdown(
               value: _statusValue,
-              decoration: _inputDecoration(),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal, // Normal font weight
-                color: Colors.black,
-              ),
-              items: ['All', 'Pending', 'Completed', 'In Progress']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+              searchController: _statusSearchController,
+              items: _filteredStatusOptions,
               onChanged: (String? newValue) {
-                setState(() {
-                  _statusValue = newValue!;
-                });
+                if (newValue != null) {
+                  setState(() {
+                    _statusValue = newValue;
+                  });
+                }
               },
             ),
           ),
@@ -391,25 +459,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           // Indentor Dropdown
           _buildFormField(
             'Indentor',
-            DropdownButtonFormField<String>(
+            _buildSearchableDropdown(
               value: _indentorValue,
-              decoration: _inputDecoration(),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal, // Normal font weight
-                color: Colors.black,
-              ),
-              items: ['All', 'Indentor 1', 'Indentor 2', 'Indentor 3']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+              searchController: _indentorSearchController,
+              items: _filteredIndentorOptions,
               onChanged: (String? newValue) {
-                setState(() {
-                  _indentorValue = newValue!;
-                });
+                if (newValue != null) {
+                  setState(() {
+                    _indentorValue = newValue;
+                  });
+                }
               },
             ),
           ),
@@ -417,25 +476,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           // Consignee Dropdown
           _buildFormField(
             'Consignee',
-            DropdownButtonFormField<String>(
+            _buildSearchableDropdown(
               value: _consigneeValue,
-              decoration: _inputDecoration(),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal, // Normal font weight
-                color: Colors.black,
-              ),
-              items: ['All', 'Consignee 1', 'Consignee 2', 'Consignee 3']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+              searchController: _consigneeSearchController,
+              items: _filteredConsigneeOptions,
               onChanged: (String? newValue) {
-                setState(() {
-                  _consigneeValue = newValue!;
-                });
+                if (newValue != null) {
+                  setState(() {
+                    _consigneeValue = newValue;
+                  });
+                }
               },
             ),
           ),
@@ -472,12 +522,19 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     // Reset form
                     _demandNoController.clear();
                     _itemDescriptionController.clear();
+                    _statusSearchController.clear();
+                    _indentorSearchController.clear();
+                    _consigneeSearchController.clear();
                     setState(() {
                       _statusValue = 'All';
                       _indentorValue = 'All';
                       _consigneeValue = 'All';
                       _fromDate = DateTime(2024, 6, 11);
                       _toDate = DateTime(2025, 5, 5);
+                      // Reset filtered lists
+                      _filteredStatusOptions = List.from(_statusOptions);
+                      _filteredIndentorOptions = List.from(_indentorOptions);
+                      _filteredConsigneeOptions = List.from(_consigneeOptions);
                     });
                   },
                   style: OutlinedButton.styleFrom(
@@ -520,6 +577,132 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // New searchable dropdown widget
+  Widget _buildSearchableDropdown({
+    required String value,
+    required TextEditingController searchController,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+        ),
+      ),
+      child: DropdownButtonFormField<String>(
+        value: items.contains(value) ? value : items.isNotEmpty ? items[0] : null,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          fillColor: Colors.white,
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+          ),
+        ),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+          color: Colors.black,
+        ),
+        icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade800, size: 28),
+        isExpanded: true,
+        dropdownColor: Colors.white,
+        menuMaxHeight: 300,
+        selectedItemBuilder: (BuildContext context) {
+          return items.map<Widget>((String item) {
+            return Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            );
+          }).toList();
+        },
+        items: [
+          DropdownMenuItem<String>(
+            value: null,
+            enabled: false,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      prefixIcon: Icon(Icons.search, color: Colors.blue.shade800, size: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 1.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue.shade800, width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    onTap: () {
+                      // Prevent the dropdown from closing when the text field is tapped
+                      // This is handled by passing the GestureTapCallback to the onTap parameter
+                    },
+                  ),
+                ),
+                Divider(height: 1, thickness: 1.5, color: Colors.blue.shade100),
+              ],
+            ),
+          ),
+          ...items.map<DropdownMenuItem<String>>((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                item,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+        onChanged: onChanged,
       ),
     );
   }
