@@ -55,6 +55,12 @@ class WarrantyRejectionRegisterScreen extends StatefulWidget {
 class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegisterScreen> {
   final TextEditingController _searchController = TextEditingController();
 
+  // Controllers for dropdown search
+  final TextEditingController _railwayController = TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
+  final TextEditingController _userDepotController = TextEditingController();
+  final TextEditingController _subConsigneeController = TextEditingController();
+
   DateTime? startDate = DateTime(2024, 2, 11);
   DateTime? endDate = DateTime(2025, 5, 1);
   String transactionType = 'Warranty Rejection Register';
@@ -63,6 +69,31 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
   String userDepot = '36640-SSE-I/PS/NDLS';
   String subConsignee = '00-SSE/EPS/UD';
   String searchFilter = 'All';
+
+  // Lists for dropdown options
+  final List<String> railwayOptions = ['IREPS-TESTING', 'IREPS-PROD', 'NORTH-RAILWAY'];
+  final List<String> departmentOptions = ['Mechanical', 'Electrical', 'Civil', 'Signal'];
+  final List<String> userDepotOptions = ['36640-SSE-I/PS/NDLS', '36641-SSE-II/PS/NDLS', '36642-SSE-III/PS/NDLS'];
+  final List<String> subConsigneeOptions = ['00-SSE/EPS/UD', '01-SSE/EPS/LD', '02-SSE/EPS/CD'];
+
+  @override
+  void initState() {
+    super.initState();
+    _railwayController.text = railway;
+    _departmentController.text = department;
+    _userDepotController.text = userDepot;
+    _subConsigneeController.text = subConsignee;
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _railwayController.dispose();
+    _departmentController.dispose();
+    _userDepotController.dispose();
+    _subConsigneeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,239 +242,71 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 16),
 
-              // Railway dropdown - Made bigger
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Increased vertical padding
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: railway,
-                        isExpanded: true,
-                        isDense: false, // Set to false for larger dropdown
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24), // Bigger icon
-                        items: ['IREPS-TESTING']
-                            .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14, // Larger font
-                            ),
-                          ),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              railway = value;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      color: Colors.white,
-                      child: Text(
-                        'Railway',
-                        style: TextStyle(
-                          fontSize: 13, // Slightly larger font
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // Railway dropdown search
+              _buildDropdownSearch(
+                label: 'Railway',
+                controller: _railwayController,
+                options: railwayOptions,
+                currentValue: railway,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      railway = value;
+                      _railwayController.text = value;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 12),
 
-              // Department dropdown - Made bigger
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Increased vertical padding
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: department,
-                        isExpanded: true,
-                        isDense: false, // Set to false for larger dropdown
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24), // Bigger icon
-                        items: ['Mechanical']
-                            .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14, // Larger font
-                            ),
-                          ),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              department = value;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      color: Colors.white,
-                      child: Text(
-                        'Select Department',
-                        style: TextStyle(
-                          fontSize: 13, // Slightly larger font
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // Department dropdown search
+              _buildDropdownSearch(
+                label: 'Select Department',
+                controller: _departmentController,
+                options: departmentOptions,
+                currentValue: department,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      department = value;
+                      _departmentController.text = value;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 12),
 
-              // User Depot dropdown - Made bigger
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Increased vertical padding
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: userDepot,
-                        isExpanded: true,
-                        isDense: false, // Set to false for larger dropdown
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24), // Bigger icon
-                        items: ['36640-SSE-I/PS/NDLS']
-                            .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14, // Larger font
-                            ),
-                          ),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              userDepot = value;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      color: Colors.white,
-                      child: Text(
-                        'Select User Depot',
-                        style: TextStyle(
-                          fontSize: 13, // Slightly larger font
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // User Depot dropdown search
+              _buildDropdownSearch(
+                label: 'Select User Depot',
+                controller: _userDepotController,
+                options: userDepotOptions,
+                currentValue: userDepot,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      userDepot = value;
+                      _userDepotController.text = value;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 12),
 
-              // Sub-Consignee dropdown - Made bigger
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Increased vertical padding
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: subConsignee,
-                        isExpanded: true,
-                        isDense: false, // Set to false for larger dropdown
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24), // Bigger icon
-                        items: ['00-SSE/EPS/UD']
-                            .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14, // Larger font
-                            ),
-                          ),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              subConsignee = value;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      color: Colors.white,
-                      child: Text(
-                        'Sub-Consignee',
-                        style: TextStyle(
-                          fontSize: 13, // Slightly larger font
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // Sub-Consignee dropdown search
+              _buildDropdownSearch(
+                label: 'Sub-Consignee',
+                controller: _subConsigneeController,
+                options: subConsigneeOptions,
+                currentValue: subConsignee,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      subConsignee = value;
+                      _subConsigneeController.text = value;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 16),
 
@@ -606,6 +469,175 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
     );
   }
 
+  // Custom dropdown search widget
+  Widget _buildDropdownSearch({
+    required String label,
+    required TextEditingController controller,
+    required List<String> options,
+    required String currentValue,
+    required Function(String?) onChanged,
+  }) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.blue.shade100),
+          ),
+          child: InkWell(
+            onTap: () {
+              _showSearchDropdown(context, options, currentValue, onChanged);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      currentValue,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 18,
+          top: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            color: Colors.white,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.blue.shade700,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Method to show dropdown search dialog
+  Future<void> _showSearchDropdown(
+      BuildContext context,
+      List<String> options,
+      String currentValue,
+      Function(String?) onChanged,
+      ) async {
+    final TextEditingController searchController = TextEditingController();
+    List<String> filteredOptions = List.from(options);
+
+    // Show a search dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                'Select Option',
+                style: TextStyle(
+                  color: Colors.blue.shade700,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Container(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Search field
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search, color: Colors.blue.shade700),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.blue.shade100),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          filteredOptions = options
+                              .where((option) => option.toLowerCase().contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    // Options list
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.3,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredOptions.length,
+                        itemBuilder: (context, index) {
+                          final option = filteredOptions[index];
+                          final isSelected = option == currentValue;
+
+                          return ListTile(
+                            title: Text(
+                              option,
+                              style: TextStyle(
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected ? Colors.blue.shade700 : Colors.black87,
+                              ),
+                            ),
+                            trailing: isSelected
+                                ? Icon(Icons.check_circle, color: Colors.blue.shade700)
+                                : null,
+                            onTap: () {
+                              onChanged(option);
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.blue.shade700),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    // Dispose of the controller
+    searchController.dispose();
+  }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -665,34 +697,6 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildCompactFilterOption({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.shade100 : Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: isSelected ? Colors.blue.shade300 : Colors.grey.shade300,
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? Colors.blue.shade700 : Colors.grey.shade700,
-          ),
-        ),
-      ),
     );
   }
 
