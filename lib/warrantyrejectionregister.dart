@@ -55,12 +55,6 @@ class WarrantyRejectionRegisterScreen extends StatefulWidget {
 class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegisterScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  // Controllers for dropdown search
-  final TextEditingController _railwayController = TextEditingController();
-  final TextEditingController _departmentController = TextEditingController();
-  final TextEditingController _userDepotController = TextEditingController();
-  final TextEditingController _subConsigneeController = TextEditingController();
-
   DateTime? startDate = DateTime(2024, 2, 11);
   DateTime? endDate = DateTime(2025, 5, 1);
   String transactionType = 'Warranty Rejection Register';
@@ -77,21 +71,8 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
   final List<String> subConsigneeOptions = ['00-SSE/EPS/UD', '01-SSE/EPS/LD', '02-SSE/EPS/CD'];
 
   @override
-  void initState() {
-    super.initState();
-    _railwayController.text = railway;
-    _departmentController.text = department;
-    _userDepotController.text = userDepot;
-    _subConsigneeController.text = subConsignee;
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
-    _railwayController.dispose();
-    _departmentController.dispose();
-    _userDepotController.dispose();
-    _subConsigneeController.dispose();
     super.dispose();
   }
 
@@ -242,68 +223,64 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 16),
 
-              // Railway dropdown search
-              _buildDropdownSearch(
-                label: 'Railway',
-                controller: _railwayController,
-                options: railwayOptions,
-                currentValue: railway,
+              // Railway dropdown
+              _buildSectionTitle('Railway'),
+              const SizedBox(height: 8),
+              _buildDropdown(
+                value: railway,
+                items: railwayOptions,
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
                       railway = value;
-                      _railwayController.text = value;
                     });
                   }
                 },
               ),
               const SizedBox(height: 12),
 
-              // Department dropdown search
-              _buildDropdownSearch(
-                label: 'Select Department',
-                controller: _departmentController,
-                options: departmentOptions,
-                currentValue: department,
+              // Department dropdown
+              _buildSectionTitle('Select Department'),
+              const SizedBox(height: 8),
+              _buildDropdown(
+                value: department,
+                items: departmentOptions,
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
                       department = value;
-                      _departmentController.text = value;
                     });
                   }
                 },
               ),
               const SizedBox(height: 12),
 
-              // User Depot dropdown search
-              _buildDropdownSearch(
-                label: 'Select User Depot',
-                controller: _userDepotController,
-                options: userDepotOptions,
-                currentValue: userDepot,
+              // User Depot dropdown
+              _buildSectionTitle('Select User Depot'),
+              const SizedBox(height: 8),
+              _buildDropdown(
+                value: userDepot,
+                items: userDepotOptions,
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
                       userDepot = value;
-                      _userDepotController.text = value;
                     });
                   }
                 },
               ),
               const SizedBox(height: 12),
 
-              // Sub-Consignee dropdown search
-              _buildDropdownSearch(
-                label: 'Sub-Consignee',
-                controller: _subConsigneeController,
-                options: subConsigneeOptions,
-                currentValue: subConsignee,
+              // Sub-Consignee dropdown
+              _buildSectionTitle('Sub-Consignee'),
+              const SizedBox(height: 8),
+              _buildDropdown(
+                value: subConsignee,
+                items: subConsigneeOptions,
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
                       subConsignee = value;
-                      _subConsigneeController.text = value;
                     });
                   }
                 },
@@ -469,173 +446,48 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
     );
   }
 
-  // Custom dropdown search widget
-  Widget _buildDropdownSearch({
-    required String label,
-    required TextEditingController controller,
-    required List<String> options,
-    required String currentValue,
+  // Regular dropdown with styled container
+  Widget _buildDropdown({
+    required String value,
+    required List<String> items,
     required Function(String?) onChanged,
   }) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: Colors.blue.shade100),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.blue.shade100),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
-          child: InkWell(
-            onTap: () {
-              _showSearchDropdown(context, options, currentValue, onChanged);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      currentValue,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700, size: 24),
-                ],
-              ),
-            ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.black87,
           ),
-        ),
-        Positioned(
-          left: 18,
-          top: 0,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            color: Colors.white,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.blue.shade700,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Method to show dropdown search dialog
-  Future<void> _showSearchDropdown(
-      BuildContext context,
-      List<String> options,
-      String currentValue,
-      Function(String?) onChanged,
-      ) async {
-    final TextEditingController searchController = TextEditingController();
-    List<String> filteredOptions = List.from(options);
-
-    // Show a search dialog
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                'Select Option',
-                style: TextStyle(
-                  color: Colors.blue.shade700,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: Container(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Search field
-                    TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search, color: Colors.blue.shade700),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: Colors.blue.shade100),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          filteredOptions = options
-                              .where((option) => option.toLowerCase().contains(value.toLowerCase()))
-                              .toList();
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    // Options list
-                    Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.3,
-                      ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: filteredOptions.length,
-                        itemBuilder: (context, index) {
-                          final option = filteredOptions[index];
-                          final isSelected = option == currentValue;
-
-                          return ListTile(
-                            title: Text(
-                              option,
-                              style: TextStyle(
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                color: isSelected ? Colors.blue.shade700 : Colors.black87,
-                              ),
-                            ),
-                            trailing: isSelected
-                                ? Icon(Icons.check_circle, color: Colors.blue.shade700)
-                                : null,
-                            onTap: () {
-                              onChanged(option);
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.blue.shade700),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          items: items.map<DropdownMenuItem<String>>((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
             );
-          },
-        );
-      },
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
     );
-
-    // Dispose of the controller
-    searchController.dispose();
   }
 
   Widget _buildSectionTitle(String title) {
