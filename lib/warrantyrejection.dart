@@ -223,10 +223,10 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 16),
 
-              // Railway dropdown
+              // Railway dropdown search
               _buildSectionTitle('Railway'),
               const SizedBox(height: 8),
-              _buildDropdown(
+              _buildDropdownSearch(
                 value: railway,
                 items: railwayOptions,
                 onChanged: (value) {
@@ -239,10 +239,10 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 12),
 
-              // Department dropdown
+              // Department dropdown search
               _buildSectionTitle('Select Department'),
               const SizedBox(height: 8),
-              _buildDropdown(
+              _buildDropdownSearch(
                 value: department,
                 items: departmentOptions,
                 onChanged: (value) {
@@ -255,10 +255,10 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 12),
 
-              // User Depot dropdown
+              // User Depot dropdown search
               _buildSectionTitle('Select User Depot'),
               const SizedBox(height: 8),
-              _buildDropdown(
+              _buildDropdownSearch(
                 value: userDepot,
                 items: userDepotOptions,
                 onChanged: (value) {
@@ -271,10 +271,10 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
               ),
               const SizedBox(height: 12),
 
-              // Sub-Consignee dropdown
+              // Sub-Consignee dropdown search
               _buildSectionTitle('Sub-Consignee'),
               const SizedBox(height: 8),
-              _buildDropdown(
+              _buildDropdownSearch(
                 value: subConsignee,
                 items: subConsigneeOptions,
                 onChanged: (value) {
@@ -446,8 +446,8 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
     );
   }
 
-  // Regular dropdown with styled container
-  Widget _buildDropdown({
+  // Custom Dropdown Search
+  Widget _buildDropdownSearch({
     required String value,
     required List<String> items,
     required Function(String?) onChanged,
@@ -465,29 +465,145 @@ class _WarrantyRejectionRegisterScreenState extends State<WarrantyRejectionRegis
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700),
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: Colors.black87,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          _showDropdownSearch(context, items, value, onChanged);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+              Icon(Icons.keyboard_arrow_down, color: Colors.blue.shade700),
+            ],
           ),
-          dropdownColor: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          items: items.map<DropdownMenuItem<String>>((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: onChanged,
         ),
       ),
     );
+  }
+
+  // Show Dropdown Search Modal
+  Future<void> _showDropdownSearch(
+      BuildContext context,
+      List<String> items,
+      String currentValue,
+      Function(String?) onChanged,
+      ) async {
+    final TextEditingController searchTextController = TextEditingController();
+    List<String> filteredItems = List.from(items);
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Drag handle
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    height: 4,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      controller: searchTextController,
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search, color: Colors.blue.shade700),
+                        filled: true,
+                        fillColor: Colors.blue.shade50,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      onChanged: (value) {
+                        setModalState(() {
+                          filteredItems = items
+                              .where((item) => item
+                              .toLowerCase()
+                              .contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = filteredItems[index];
+                        final isSelected = item == currentValue;
+
+                        return InkWell(
+                          onTap: () {
+                            onChanged(item);
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.blue.shade50 : Colors.white,
+                              border: Border(
+                                bottom: BorderSide(color: Colors.grey.shade200),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  item,
+                                  style: TextStyle(
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelected ? Colors.blue.shade700 : Colors.black87,
+                                  ),
+                                ),
+                                if (isSelected)
+                                  Icon(Icons.check, color: Colors.blue.shade700),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    // Clean up
+    searchTextController.dispose();
   }
 
   Widget _buildSectionTitle(String title) {
