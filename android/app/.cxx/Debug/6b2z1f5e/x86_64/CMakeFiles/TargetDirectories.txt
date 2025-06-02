@@ -1,0 +1,3 @@
+D:/ireps_cris/android/app/.cxx/Debug/6b2z1f5e/x86_64/CMakeFiles/ireps.dir
+D:/ireps_cris/android/app/.cxx/Debug/6b2z1f5e/x86_64/CMakeFiles/edit_cache.dir
+D:/ireps_cris/android/app/.cxx/Debug/6b2z1f5e/x86_64/CMakeFiles/rebuild_cache.dir
