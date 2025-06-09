@@ -1,0 +1,1 @@
+D:\ireps_cris\android\app\src\main\cpp\CMakeLists.txt
