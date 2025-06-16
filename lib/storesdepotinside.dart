@@ -220,12 +220,13 @@ class StockItemCard extends StatelessWidget {
           children: [
             // Header Row
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade800,
+                    color: Colors.blue.shade300,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
@@ -252,6 +253,7 @@ class StockItemCard extends StatelessWidget {
                           color: Colors.blue.shade800,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         '${item.storesDepot} • Ward ${item.ward}',
                         style: TextStyle(
@@ -264,13 +266,13 @@ class StockItemCard extends StatelessWidget {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade800,
+                    color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.share,
-                      color: Colors.white,
+                      color: Colors.blue.shade600,
                       size: 20,
                     ),
                     onPressed: () {},
