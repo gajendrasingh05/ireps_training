@@ -110,12 +110,12 @@ class RailwayBillSummaryPage extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0), // Reduced padding
         itemCount: billsData.length,
         itemBuilder: (context, index) {
           final billData = billsData[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
+            padding: const EdgeInsets.only(bottom: 8.0), // Reduced padding
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -125,32 +125,23 @@ class RailwayBillSummaryPage extends StatelessWidget {
                   child: Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(8), // Reduced padding
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 12), // Space at top for circle alignment
+                          const SizedBox(height: 8), // Reduced space
 
                           // Main Bill Details Card
                           Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8), // Smaller radius
                               border: Border.all(color: Colors.grey[200]!),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
-                            padding: const EdgeInsets.all(20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -160,7 +151,10 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
@@ -177,103 +171,111 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: 8), // Reduced space
 
                                 // Bill Information Grid
-                                _buildInfoGrid([
-                                  {'label': 'Railway', 'value': billData['railway']},
-                                  {'label': 'Unit Name', 'value': billData['unitName']},
-                                  {'label': 'Department', 'value': billData['department']},
-                                  {'label': 'Consignee', 'value': billData['consignee']},
-                                ]),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0), // Inner padding
+                                  child: _buildInfoGrid([
+                                    {'label': 'Railway', 'value': billData['railway']},
+                                    {'label': 'Unit Name', 'value': billData['unitName']},
+                                    {'label': 'Department', 'value': billData['department']},
+                                    {'label': 'Consignee', 'value': billData['consignee']},
+                                  ]),
+                                ),
 
-                                const Divider(height: 20, thickness: 1),
+                                const Divider(height: 1, thickness: 1), // Thinner divider
 
-                                _buildInfoGrid([
-                                  {'label': 'Paying Authority', 'value': billData['payingAuthority']},
-                                  {'label': 'PO No. & Date', 'value': billData['poNumber']},
-                                  {'label': 'Vendor Name', 'value': billData['vendorName']},
-                                  {'label': 'PO SI. No.', 'value': billData['poSiNo']},
-                                ]),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: _buildInfoGrid([
+                                    {'label': 'Paying Authority', 'value': billData['payingAuthority']},
+                                    {'label': 'PO No. & Date', 'value': billData['poNumber']},
+                                    {'label': 'Vendor Name', 'value': billData['vendorName']},
+                                    {'label': 'PO SI. No.', 'value': billData['poSiNo']},
+                                  ]),
+                                ),
 
-                                const Divider(height: 20, thickness: 1),
+                                const Divider(height: 1, thickness: 1),
 
-                                _buildInfoGrid([
-                                  {'label': 'Doc. Type', 'value': billData['docType']},
-                                  {'label': 'Doc. No. & Date', 'value': billData['docNumber']},
-                                  {'label': 'Bill No. & Date', 'value': billData['billNumber']},
-                                  {'label': 'IREPS Bill No. & Date', 'value': billData['irepsBillNumber']},
-                                ]),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: _buildInfoGrid([
+                                    {'label': 'Doc. Type', 'value': billData['docType']},
+                                    {'label': 'Doc. No. & Date', 'value': billData['docNumber']},
+                                    {'label': 'Bill No. & Date', 'value': billData['billNumber']},
+                                    {'label': 'IREPS Bill No. & Date', 'value': billData['irepsBillNumber']},
+                                  ]),
+                                ),
 
-                                const Divider(height: 20, thickness: 1),
+                                const Divider(height: 1, thickness: 1),
 
                                 // IREPS Bill Details with equal spacing
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: _buildInfoItem({'label': 'IREPS Bill Sr. No.', 'value': billData['srNo']}),
-                                    ),
-                                    const SizedBox(width: 50),
-                                    Expanded(
-                                      flex: 1,
-                                      child: _buildInfoItem({'label': 'Qty', 'value': billData['qty']}),
-                                    ),
-                                    const SizedBox(width: 0),
-                                    Expanded(
-                                      flex: 1,
-                                      child: _buildInfoItem({'label': 'Bill Amt.', 'value': billData['billAmount'], 'isAmount': true}),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                const Divider(height: 20, thickness: 1),
-
-                                // Item Description at the bottom
-                                Text(
-                                  'Description',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.blue[800],
-                                    letterSpacing: 0.3,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: _buildInfoItem({'label': 'IREPS Bill Sr. No.', 'value': billData['srNo']}),
+                                      ),
+                                      const SizedBox(width: 8), // Reduced spacing
+                                      Expanded(
+                                        flex: 1,
+                                        child: _buildInfoItem({'label': 'Qty', 'value': billData['qty']}),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        flex: 1,
+                                        child: _buildInfoItem({'label': 'Bill Amt.', 'value': billData['billAmount'], 'isAmount': true}),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  billData['description'],
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
-                                    height: 1.3,
+
+                                const Divider(height: 1, thickness: 1),
+
+                                // Item Description at the bottom
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Description',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.blue[800],
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        billData['description'],
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          const SizedBox(height: 16),
-
                           // Bill Status Summary Card
                           Container(
                             width: double.infinity,
+                            margin: const EdgeInsets.only(top: 8), // Reduced spacing
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: Colors.grey[200]!),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
-                            padding: const EdgeInsets.all(20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -282,7 +284,10 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                    ),
                                   ),
                                   child: const Row(
                                     children: [
@@ -300,55 +305,58 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(height: 20),
-
-                                // Bill Status Grid
-                                Row(
-                                  children: [
-                                    Expanded(child: _buildStatusCard('Opening Balance', billData['openingBalance'], Colors.blue[700]!, context)),
-                                    const SizedBox(width: 12),
-                                    Expanded(child: _buildStatusCard('Bills Received', billData['billsReceived'], Colors.green[700]!, context)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buildStatusCard('Bills Returned', billData['billsReturned'], Colors.orange[700]!, context)),
-                                    const SizedBox(width: 12),
-                                    Expanded(child: _buildStatusCard('Bills Passed', billData['billsPassed'], Colors.purple[700]!, context)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                // Centered Pending Bills card
-                                Center(
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.4, // Adjust width as needed
-                                    child: _buildStatusCard('Pending Bills', billData['pendingBills'], Colors.red[700]!, context),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      // Bill Status Grid
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildStatusCard('Opening Balance', billData['openingBalance'], Colors.blue[700]!, context),
+                                          ),
+                                          const SizedBox(width: 8), // Reduced spacing
+                                          Expanded(
+                                            child: _buildStatusCard('Bills Received', billData['billsReceived'], Colors.green[700]!, context),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8), // Reduced spacing
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildStatusCard('Bills Returned', billData['billsReturned'], Colors.orange[700]!, context),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: _buildStatusCard('Bills Passed', billData['billsPassed'], Colors.purple[700]!, context),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Centered Pending Bills card
+                                      Center(
+                                        child: SizedBox(
+                                          width: double.infinity, // Full width
+                                          child: _buildStatusCard('Pending Bills', billData['pendingBills'], Colors.red[700]!, context),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          const SizedBox(height: 16),
-
                           // Pending Bills Breakdown Card
                           Container(
                             width: double.infinity,
+                            margin: const EdgeInsets.only(top: 8), // Reduced spacing
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: Colors.grey[200]!),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
-                            padding: const EdgeInsets.all(20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -357,7 +365,10 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                   decoration: BoxDecoration(
                                     color: Colors.orange[400],
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                    ),
                                   ),
                                   child: const Row(
                                     children: [
@@ -375,23 +386,36 @@ class RailwayBillSummaryPage extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(height: 20),
-
-                                // Pending Bills Grid - Now with equal sizing matching status cards
-                                Row(
-                                  children: [
-                                    Expanded(child: _buildPendingCard('< 7 Days', billData['lessThan7Days'], Colors.green[700]!, context)),
-                                    const SizedBox(width: 12),
-                                    Expanded(child: _buildPendingCard('7 to 15 Days', billData['days7to15'], Colors.yellow[800]!, context)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buildPendingCard('15 to 30 Days', billData['days15to30'], Colors.orange[700]!, context)),
-                                    const SizedBox(width: 12),
-                                    Expanded(child: _buildPendingCard('> 30 Days', billData['moreThan30Days'], Colors.red[700]!, context)),
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      // Pending Bills Grid
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildPendingCard('< 7 Days', billData['lessThan7Days'], Colors.green[700]!, context),
+                                          ),
+                                          const SizedBox(width: 8), // Reduced spacing
+                                          Expanded(
+                                            child: _buildPendingCard('7 to 15 Days', billData['days7to15'], Colors.yellow[800]!, context),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8), // Reduced spacing
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildPendingCard('15 to 30 Days', billData['days15to30'], Colors.orange[700]!, context),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: _buildPendingCard('> 30 Days', billData['moreThan30Days'], Colors.red[700]!, context),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -404,14 +428,14 @@ class RailwayBillSummaryPage extends StatelessWidget {
 
                 // Circle positioned at the left corner of the main card
                 Positioned(
-                  top: 8, // Position closer to the top corner
-                  left: 0, // Position at the very left edge
+                  top: 1,
+                  left: 0,
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 28, // Smaller size
+                    height: 25,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.blue[600]!, Colors.blue[800]!],
+                        colors: [Colors.blue[200]!, Colors.blue[800]!],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -419,9 +443,9 @@ class RailwayBillSummaryPage extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
+                          spreadRadius: 1, // Reduced shadow
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -431,7 +455,7 @@ class RailwayBillSummaryPage extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 16, // Smaller font
                         ),
                       ),
                     ),
@@ -450,14 +474,14 @@ class RailwayBillSummaryPage extends StatelessWidget {
       children: [
         for (int i = 0; i < items.length; i += 2)
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 8), // Reduced spacing
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: _buildInfoItem(items[i]),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8), // Reduced spacing
                 Expanded(
                   child: i + 1 < items.length ? _buildInfoItem(items[i + 1]) : Container(),
                 ),
@@ -471,32 +495,23 @@ class RailwayBillSummaryPage extends StatelessWidget {
   Widget _buildStatusCard(String title, String value, Color textColor, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Handle navigation to another page
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Navigating to $title details...'),
             backgroundColor: Colors.blue[800],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8), // Smaller radius
             ),
           ),
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12), // Reduced padding
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8), // Smaller radius
           border: Border.all(color: Colors.grey[300]!),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,21 +525,21 @@ class RailwayBillSummaryPage extends StatelessWidget {
                 letterSpacing: 0.3,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4), // Reduced spacing
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 20, // Smaller font
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
+                  size: 14, // Smaller icon
                   color: Colors.grey[400],
                 ),
               ],
@@ -538,32 +553,23 @@ class RailwayBillSummaryPage extends StatelessWidget {
   Widget _buildPendingCard(String period, String count, Color textColor, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Handle navigation to another page
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Navigating to $period pending bills...'),
             backgroundColor: Colors.orange[800],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8), // Smaller radius
             ),
           ),
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12), // Reduced padding
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8), // Smaller radius
           border: Border.all(color: Colors.grey[300]!),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,21 +583,21 @@ class RailwayBillSummaryPage extends StatelessWidget {
                 letterSpacing: 0.3,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4), // Reduced spacing
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   count,
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 20, // Smaller font
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
+                  size: 14, // Smaller icon
                   color: Colors.grey[400],
                 ),
               ],
@@ -617,12 +623,12 @@ class RailwayBillSummaryPage extends StatelessWidget {
               letterSpacing: 0.3,
             ),
           ),
-        if (item['label'].isNotEmpty) const SizedBox(height: 4),
+        if (item['label'].isNotEmpty) const SizedBox(height: 2), // Reduced spacing
         if (item['value'].isNotEmpty)
           Text(
             item['value'],
             style: TextStyle(
-              fontSize: isAmount ? 16 : 14,
+              fontSize: isAmount ? 14 : 13, // Smaller fonts
               fontWeight: isAmount ? FontWeight.bold : FontWeight.w500,
               color: isAmount ? Colors.green[700] : Colors.black87,
               height: 1.3,
