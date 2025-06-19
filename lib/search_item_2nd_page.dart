@@ -91,7 +91,7 @@ class NonMovingItemsPage extends StatelessWidget {
                     iconColor: Colors.blue.shade700,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 20),
                 Expanded(
                   child: _buildSummaryCard(
                     icon: Icons.currency_rupee,
@@ -104,7 +104,7 @@ class NonMovingItemsPage extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -136,6 +136,7 @@ class NonMovingItemsPage extends StatelessWidget {
     required Color iconColor,
   }) {
     return Container(
+      height: 75,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -174,12 +175,15 @@ class NonMovingItemsPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade700,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
                   ),
                 ),
                 if (subtitle.isNotEmpty)
@@ -232,16 +236,16 @@ class InventoryItemCard extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade700,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(18),
                   ),
                   child: Center(
                     child: Text(
                       '$index',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Colors.blue.shade700,
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 18,
                       ),
                     ),
                   ),
@@ -310,31 +314,16 @@ class InventoryItemCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _buildDetailItem('PL No', item.plNo, Colors.black),
+                  flex: 1,
+                  child: _buildDetailItem('PL No./Item Code', item.plNo, Colors.black),
                 ),
                 Expanded(
-                  child: _buildDetailItem(
-                    'Avg Rate (Rs.)',
-                    '₹${item.rate.toStringAsFixed(2)}',
-                    Colors.green.shade700,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: _buildDetailItem('Stock Unit', item.qty, Colors.black),
-                ),
-                Expanded(
-                  flex: 2,
+                 
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Item Type / Category',
+                        'Item Category',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -355,6 +344,22 @@ class InventoryItemCard extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: _buildDetailItem(
+                    'Rate',
+                    '₹${item.rate.toStringAsFixed(2)}',
+                    Colors.green.shade700,
+                  ),
+                ),
+                Expanded(
+                  child: _buildDetailItem('Quantity', item.qty, Colors.black),
+                ),
+              ],
+            ),
             const SizedBox(height: 14),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,7 +370,7 @@ class InventoryItemCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ledger Information',
+                        'Ledger Name',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -388,7 +393,7 @@ class InventoryItemCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Brief Description',
+              'Item Description',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
