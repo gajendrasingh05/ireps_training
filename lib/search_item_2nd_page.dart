@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -357,7 +358,16 @@ class _NonMovingItemsPageState extends State<NonMovingItemsPage> {
         foregroundColor: Colors.blue.shade700,
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.analytics_outlined),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.analytics_outlined),
+            Text(
+              "Summary",
+              style: TextStyle(color: Colors.blue.shade800, fontSize: 8),
+            ),
+          ],
+        ),
       ),
     );
 
@@ -439,43 +449,13 @@ class _NonMovingItemsPageState extends State<NonMovingItemsPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
+            width: MediaQuery.of(context).size.width * 0.95,
             height: MediaQuery.of(context).size.height * 0.8,
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade100, Colors.blue.shade50],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.analytics_rounded,
-                        color: Colors.blue.shade900,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Inventory Summary Statistics',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -483,7 +463,7 @@ class _NonMovingItemsPageState extends State<NonMovingItemsPage> {
                       children: [
                         // Summary Table Section
                         _buildSummaryTable(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
 
                         // Grand Total Section
                         _buildAnalysisSection('Total Value', Icons.calculate, [
@@ -493,25 +473,21 @@ class _NonMovingItemsPageState extends State<NonMovingItemsPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton.icon(
+                    ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
-                      label: const Text('Close'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade50,
                         foregroundColor: Colors.blue.shade900,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
+                        padding: const EdgeInsets.all(12),
                       ),
+                      child: const Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -580,7 +556,7 @@ class _NonMovingItemsPageState extends State<NonMovingItemsPage> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -859,20 +835,23 @@ class InventoryItemCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$index',
-                      style: TextStyle(
-                        color: Colors.blue.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                Transform.translate(
+                  offset: Offset(0, -20),
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$index',
+                        style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -923,7 +902,6 @@ class InventoryItemCard extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    // Share Button (smaller)
                     Container(
                       width: 36,
                       height: 36,
@@ -946,7 +924,6 @@ class InventoryItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Right Arrow Button
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -1216,42 +1193,60 @@ class UserDepotDetailsPage extends StatelessWidget {
               Text(
                 'IREPS',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue.shade800,
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 18,
-                ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  consigneeCode,
-                  style: TextStyle(
-                    color: Colors.blue.shade800,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Consignee',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        'Code',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 18,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      consigneeCode,
+                      style: TextStyle(
+                        color: Colors.blue.shade800,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          Text(
-            'Consignee Details',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 4),
 
           // Sub-card with contact details
           Container(
@@ -1305,44 +1300,62 @@ class UserDepotDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Contact Information
-                _buildContactInfo(Icons.email, 'cris.test@ireps.gov.in'),
-                const SizedBox(height: 8),
-                _buildContactInfo(Icons.phone, '+91-9876543210'),
-                const SizedBox(height: 16),
-
-                // Action Buttons
+                // Contact Information and Action Buttons
                 Row(
                   children: [
+                    // Contact Information Column
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.save, size: 16),
-                        label: const Text('Save Contact'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade600,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildContactInfo(
+                            Icons.email,
+                            'cris.test@ireps.gov.in',
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          _buildContactInfo(Icons.phone, '+91-9876543210'),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
+                    // Action Buttons Row
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.message, size: 16),
-                        label: const Text('WhatsApp msg'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade500,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.blue.shade500,
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.person_add,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.green.shade500,
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                FontAwesomeIcons.whatsapp,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -1365,10 +1378,10 @@ class UserDepotDetailsPage extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.location_on,
-                            color: Colors.red.shade600,
-                            size: 16,
+                            color: Colors.blue.shade800,
+                            size: 18,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 2),
                           Text(
                             'Depot Address',
                             style: TextStyle(
@@ -1428,21 +1441,16 @@ class UserDepotDetailsPage extends StatelessWidget {
           // Red Label
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.red.shade500,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Text(
+            child: Text(
               'Details of Overall-in-charge',
               style: TextStyle(
-                color: Colors.white,
+                fontStyle: FontStyle.italic,
+                color: Colors.blue.shade800,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
             ),
           ),
-          const SizedBox(height: 16),
-
           // Contact Details
           Container(
             width: double.infinity,
@@ -1495,44 +1503,62 @@ class UserDepotDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Contact Information
-                _buildContactInfo(Icons.email, 'mohan.lal@ireps.gov.in'),
-                const SizedBox(height: 8),
-                _buildContactInfo(Icons.phone, '+91-9123456789'),
-                const SizedBox(height: 16),
-
-                // Action Buttons
+                // Contact Information and Action Buttons
                 Row(
                   children: [
+                    // Contact Information Column
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.save, size: 16),
-                        label: const Text('Save Contact'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade600,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildContactInfo(
+                            Icons.email,
+                            'mohan.lal@ireps.gov.in',
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          _buildContactInfo(Icons.phone, '+91-9123456789'),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
+                    // Action Buttons Row
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.message, size: 16),
-                        label: const Text('WhatsApp msg'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade500,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.blue.shade500,
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.person_add,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.green.shade500,
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                FontAwesomeIcons.whatsapp,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
