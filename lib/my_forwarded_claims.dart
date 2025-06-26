@@ -359,7 +359,7 @@ class ClaimsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabelValue(
-                        'Forwarded To/Date:',
+                        'Forwarded To / Date:',
                         item.forwardToDate,
                       ),
                       const SizedBox(height: 4),
@@ -369,7 +369,7 @@ class ClaimsCard extends StatelessWidget {
                           const Text(
                             'Vendor Name:',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.black87,
                             ),
@@ -393,9 +393,9 @@ class ClaimsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'PO-Contract/Challan No. & Date:',
+                  'PO-Contract / Challan No. & Date:',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
@@ -429,7 +429,7 @@ class ClaimsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildLabelValue(
-              'Warranty Claim No. & Rejection/Supply Ref:',
+              'Warranty Claim No. & Rejection / Supply Ref:',
               item.warranty,
             ),
             const SizedBox(height: 12),
@@ -438,7 +438,7 @@ class ClaimsCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 4),
@@ -456,7 +456,7 @@ class ClaimsCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -477,7 +477,7 @@ class ClaimsCard extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -518,7 +518,7 @@ class _ExpandableTextState extends State<ExpandableText> {
           widget.text,
           maxLines: _expanded ? null : widget.maxLines,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 13, color: Colors.black, height: 1.4),
+          style: TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
         ),
         if (_shouldShowToggle(widget.text))
           GestureDetector(
