@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'user_depot_stock_summary.dart';
-import 'submit_summary_of_stocks.dart';
+import 'submit_summary_of_stock.dart';
 
 void main() {
   runApp(const MyApp());
