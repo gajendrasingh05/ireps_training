@@ -1,3 +1,6 @@
+//*** path ***
+//User Depot Module >> Summary of Stock >>
+
 import 'package:flutter/material.dart';
 import 'user_depot_stock_summary.dart';
 import 'submit_summary_of_stocks.dart';
@@ -12,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Summary of Stocks',
+      title: 'Summary of Stock',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Colors.blue.shade800,
@@ -146,7 +149,7 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Summary of Stocks',
+          'Summary of Stock',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
         leading: IconButton(
