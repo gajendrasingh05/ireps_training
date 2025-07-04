@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'user_depot_stock_summary.dart';
+import 'submit_summary_of_stocks.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stock Management',
+      title: 'Summary of Stocks',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Colors.blue.shade800,
@@ -373,7 +375,7 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
                     if (isItemTypeSelected) ...[
                       const SizedBox(height: 16),
                       _buildSubDropdown(
-                        'Select item type detail',
+                        'Item Type',
                         selectedItemType,
                         itemTypes,
                         (String? value) {
@@ -387,7 +389,7 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
                     if (isItemUsageSelected) ...[
                       const SizedBox(height: 16),
                       _buildSubDropdown(
-                        'Select item usage detail',
+                        'Item Usage',
                         selectedItemUsage,
                         itemUsages,
                         (String? value) {
@@ -401,7 +403,7 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
                     if (isItemCategorySelected) ...[
                       const SizedBox(height: 16),
                       _buildSubDropdown(
-                        'Select item category detail',
+                        'Item Category',
                         selectedItemCategory,
                         itemCategories,
                         (String? value) {
@@ -415,7 +417,7 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
                     if (isStockNonStockSelected) ...[
                       const SizedBox(height: 16),
                       _buildSubDropdown(
-                        'Select Stock/Non-Stock',
+                        'Stock/Non-Stock',
                         selectedStockNonStock,
                         stockNonStock,
                         (String? value) {
@@ -763,7 +765,6 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
       isStockNonStockSelected = false;
     });
 
-    // Show enhanced success feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -793,7 +794,21 @@ class _SummaryOfStocksScreenState extends State<SummaryOfStocksScreen> {
     );
   }
 
-  void _submitQuery() {}
+  void _submitQuery() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SubmitSummaryofStocksScreen()),
+    );
+  }
 
-  void _showSummary() {}
+  void _showSummary() {
+    // Navigate to the User Depot Stock Summary screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const UserDepotStockSummaryScreen(),
+      ),
+    );
+  }
 }
